@@ -82,120 +82,37 @@
       }
 
     </style>
-    
-    <section>
-      <template is="dom-if" if="{{activeUserPromise}}">
+
+    <section class="search-results">
+      <template is="dom-if" if="{{ activeCityWeatherPromise }}">
         <header>
-          Users
+          Loading weather data
           <paper-spinner active></paper-spinner>
         </header>
       </template>
 
-      <template is="dom-if" if="{{userInfos.length}}">
-        <header>Users</header>
-        <paper-material class="no-padding" elevation="1">
-          <ul class="unstyled">
-            <template is="dom-repeat" items="{{userInfos}}">
-              <li class="paper-list-item user-name-li" on-tap="openUserInfoDialog">
-                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-                <span class="user-name">{{item.login}}</span>
-                <paper-ripple></paper-ripple>
-              </li>
-            </template>
-          </ul>
-        </paper-material>
-      </template>
-    </section>
-
-    <section class="search-results-repos">
-      <template is="dom-if" if="{{activeRepoPromise}}">
-        <header>
-          Repos
-          <paper-spinner active></paper-spinner>
-        </header>
-      </template>
-
-      <template is="dom-if" if="{{repoInfos.length}}">
+      <template is="dom-if" if="{{ cityWeather.length }}">
         <header class="flex-item-with-addons">
-          <span class="flex-main-item">Repos</span>
+          <span class="flex-main-item">City</span>
 
           <paper-button class="flex-item-addon"
-            on-tap="toggleRepoListItemsSelection"
-            data-target-container=".search-results-repos"
-            data-target-type="!fork">
+            on-tap="toggleCityListItemsSelection"
+            data-target-container=".search-results">
             <iron-icon icon="social:location-city"></iron-icon>
             <iron-icon icon="icons:star-half"></iron-icon>
           </paper-button>
-
-          <paper-button class="flex-item-addon"
-            on-tap="toggleRepoListItemsSelection"
-            data-target-container=".search-results-repos"
-            data-target-type="fork">
-            <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-            <iron-icon icon="icons:star-half"></iron-icon>
-          </paper-button>
         </header>
         <paper-material class="no-padding" elevation="1">
           <ul class="unstyled">
-            <template is="dom-repeat" items="{{repoInfos}}">
+            <template is="dom-repeat" items="{{ cityWeather }}">
               <li class="paper-list-item">
-                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
+                <search-cities-list-item item="{{ item }}" saved-items="{{ savedItems }}"></search-cities-list-item>
               </li>
             </template>
           </ul>
         </paper-material>
       </template>
     </section>
-
-
-    <paper-dialog id="userInfoDialog">
-      <header class="flex-item-with-addons">
-        <h2 class="flex-main-item">Repos</h2>
-
-        <paper-button class="flex-item-addon"
-          on-tap="toggleRepoListItemsSelection"
-          data-target-container="#userInfoDialog"
-          data-target-type="!fork">
-          <iron-icon icon="social:location-city"></iron-icon>
-          <iron-icon icon="icons:star-half"></iron-icon>
-        </paper-button>
-
-        <paper-button class="flex-item-addon"
-          on-tap="toggleRepoListItemsSelection"
-          data-target-container="#userInfoDialog"
-          data-target-type="fork">
-          <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-          <iron-icon icon="icons:star-half"></iron-icon>
-        </paper-button>
-      </header>
-      <paper-dialog-scrollable>
-
-        <template is="dom-if" if="{{selectedUserReposPromise}}">
-          <paper-spinner active></paper-spinner>
-        </template>
-
-        <template is="dom-if" if="{{selectedUserRepos.length}}">
-          <ul class="unstyled">
-            <template is="dom-repeat" items="{{selectedUserRepos}}">
-              <li class="paper-list-item">
-                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
-              </li>
-            </template>
-          </ul>
-        </template>
-
-        <template is="dom-if" if="{{!selectedUserReposPromise}}">
-          <template is="dom-if" if="{{!selectedUserRepos.length}}">
-            No repositories found!
-          </template>
-        </template>
-        
-      </paper-dialog-scrollable>
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm autofocus on-tap="userInfoDialogOK">OK</paper-button>
-      </div>
-    </paper-dialog>
 
   </template>
 
@@ -224,7 +141,7 @@
           //   notify: true
           // },
 
-          userInfos: {
+          cityWeather: {
             type: Array,
             default: f => {
               return [];
@@ -233,59 +150,14 @@
             readOnly: true
           },
 
-          repoInfos: {
-            type: Array,
-            default: f => {
-              return [];
-            },
-            notify: true,
-            readOnly: true
-          },
-
-          activeUserPromise: {
+          activeCityWeatherPromise: {
             type: Object,
             default: f => {
               return null;
             },
             notify: true,
             readOnly: true
-          },
-
-          activeRepoPromise: {
-            type: Object,
-            default: f => {
-              return null;
-            },
-            notify: true,
-            readOnly: true
-          },
-
-          selectedUser: {
-            type: Object,
-            default: f => {
-              return null;
-            },
-            notify: true,
-            readOnly: true
-          },
-
-          selectedUserReposPromise: {
-            type: Object,
-            default: f => {
-              return null;
-            },
-            notify: true,
-            readOnly: true
-          },
-
-          selectedUserRepos: {
-            type: Array,
-            default: f => {
-              return [];
-            },
-            notify: true,
-            readOnly: true
-          },
+          }
         },
 
         _debounced_searchTermChanged: function() {
@@ -296,53 +168,33 @@
 
         _searchTermChanged: function () {
           if (!this.searchTerm || this.searchTerm.length < 3) {
-            this._setUserInfos([]);
-            this._setActiveUserPromise(null);
-
-            this._setRepoInfos([]);
-            this._setActiveRepoPromise(null);
+            this._setCityWeather([]);
+            this._setActiveCityWeatherPromise(null);
           }
 
           var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-          if (searchProvider) {
-            let promise = searchProvider.searchUser(this.searchTerm);
-            this._setActiveUserPromise(promise);
-            promise.then(u => {
-              if (this.activeUserPromise === promise) {
-                if (u && u.items) {
-                  this._setUserInfos(u.items);
-                } else {
-                  this._setUserInfos([]);
-                }
-                this._setActiveUserPromise(null);
+          var promise = searchProvider.getCityWeather(this.searchTerm);
+          this._setActiveCityWeatherPromise(promise);
+          promise.then(data => {
+            // ensure that the user hasn't initiated
+            // a new search
+            if (this.activeCityWeatherPromise === promise) {
+              if (data && data.name) {
+                this._setCityWeather([data]);
+              } else {
+                this._setCityWeather([]);
               }
-            }, () => {
-              this._setUserInfos([]);
-            });
-          }
-
-          if (searchProvider) {
-            let promise = searchProvider.searchRepo(this.searchTerm);
-            this._setActiveRepoPromise(promise);
-            promise.then(u => {
-              if (this.activeRepoPromise === promise) {
-                if (u && u.items) {
-                  this._setRepoInfos(u.items);
-                } else {
-                  this._setRepoInfos([]);
-                }
-                this._setActiveRepoPromise(null);
-              }
-            }, () => {
-              this._setRepoInfos([]);
-            });
-          }
+              this._setActiveCityWeatherPromise(null);
+            }
+          }, () => {
+            this._setCityWeather([]);
+          });
         },
 
-        toggleRepoListItemsSelection: function (e, detail) {
+        toggleCityListItemsSelection: function (e, detail) {
           var button = (e.currentTarget || e.target);
           var items = Array.prototype.slice.apply(
-            document.querySelectorAll(`${button.dataset.targetContainer} search-repo-list-item`));
+            document.querySelectorAll(`${button.dataset.targetContainer} search-cities-list-item`));
 
           if (button.dataset.targetType) {
             let invertFilter = button.dataset.targetType.indexOf('!') === 0;
@@ -355,10 +207,10 @@
               element.item &&
               (!element.item[filterPropName]) === invertFilter);
           }
-          this._toggleRepoListItemsSelection(items);
+          this._toggleCityListItemsSelection(items);
         },
 
-        _toggleRepoListItemsSelection: function (items) {
+        _toggleCityListItemsSelection: function (items) {
           var selected = [];
           var unselected = [];
 
@@ -372,30 +224,13 @@
 
           if (selected.length === items.length) {
             selected.forEach((element) => {
-              element.toggleSaveUserRepo();
+              element.toggleSaveUserCity();
             });
           } else {
             unselected.forEach((element) => {
-              element.toggleSaveUserRepo();
+              element.toggleSaveUserCity();
             });
           }
-        },
-
-        openUserInfoDialog: function (e, detail) {
-          this._setSelectedUser(e.model.item);
-          this._setSelectedUserRepos([]);
-          this._setSelectedUserReposPromise(searchProvider
-            .getUserRepos(e.model.item.login)
-            .then(repos => {
-              this._setSelectedUserRepos(repos);
-              this._setSelectedUserReposPromise(null);
-              return repos;
-            }));
-          userInfoDialog.open();
-        },
-
-        userInfoDialogOK: function (e, detail) {
-
         },
 
         ready: function() {
