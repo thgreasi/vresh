@@ -1,11 +1,15 @@
-import CityWeatherDetails from '../Model/CityWeatherDetails';
+import {
+    OpenWeatherMap_WS_BASE_URL as BASE_URL,
+    OpenWeatherMap_WS_AppId as appid
+} from '../appConfig.js';
 
-const BASE_URL = 'https://api.github.com/';
+import CityWeatherDetails from '../Model/CityWeatherDetails';
 
 export class WeatherService {
 
-    static getUserInfo (username) {
-        return fetch(BASE_URL + `users/${username}`).then(function (response) {
+    // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
+    static getCityWeather (cityname) {
+        return fetch(`${BASE_URL}weather?q=${cityname}&appid=${appid}`).then(function (response) {
             return response.json();
         }).catch(function (err) {
             console.log(err);
@@ -13,80 +17,10 @@ export class WeatherService {
         });
     }
 
-    static getUserOrgs (username) {
-        return fetch(BASE_URL + `users/${username}/orgs`).then(function (response) {
+    // http://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b1b15e88fa797225412429c1c50c122a1
+    static getLocationWeather (lat, lon) {
+        return fetch(`${BASE_URL}weather?lat=${lat}&lon=${lon}&appid=${appid}`).then(function (response) {
             return response.json();
-        }).catch(function (err) {
-            console.log(err);
-            return err;
-        });
-    }
-
-    static getUserRepos (username) {
-        return fetch(BASE_URL + `users/${username}/repos`).then(function (response) {
-            return response.json();
-        }).then(function (repos) {
-            return repos.map(function (repo) {
-                return {
-                    id: repo.id,
-                    name: repo.name,
-                    owner: repo.ownder,
-                    full_name: repo.full_name,
-                    description: repo.description,
-                    fork: repo.fork,
-                    html_url: repo.html_url,
-                    url: repo.url,
-                    tags_url: repo.tags_url,
-                    stargazers_count: repo.stargazers_count,
-                    watchers_count: repo.watchers_count
-                };
-            }).filter(function (repo) {
-                return !repo.fork;
-            }).map(repo => Object.assign(new CityWeatherDetails(), repo));
-        }).catch(function (err) {
-            console.log(err);
-            return err;
-        });
-    }
-
-    static getRepoDetails (username, reponame) {
-        return fetch(BASE_URL + `repos/${username}/${reponame}`).then(function (response) {
-            return response.json();
-        }).then(repo => {
-            // the only extras are: network_count & subscribers_count
-            return Object.assign(new CityWeatherDetails(), repo);
-        }).catch(function (err) {
-            console.log(err);
-            return err;
-        });
-    }
-
-    // https://developer.github.com/v3/search/#search-users
-    // file:///home/teo/Drive/Dev/githubAnalytics/research/docs/Search%20|%20GitHub%20Developer%20Guide.html#search-users
-    static searchUser (username) {
-        // https://api.github.com/search/users?q=thgre
-        return fetch(BASE_URL + `search/users?q=${username}`).then(function (response) {
-            return response.json();
-        }).catch(function (err) {
-            console.log(err);
-            return err;
-        });
-    }
-
-    // TODO: add TopN parameter
-    // https://developer.github.com/v3/search/#search-repositories
-    // file:///home/teo/Drive/Dev/githubAnalytics/research/docs/Search%20|%20GitHub%20Developer%20Guide.html#search-repositories
-    static searchRepo (reponame) {
-        // https://api.github.com/search/repositories?q=localfora
-        return fetch(BASE_URL + `search/repositories?q=${reponame}`).then(function (response) {
-            var result = response.json();
-            if (!result.items) {
-                debugger;
-            }
-            return result;
-        }).then(result => {
-            result.items = result.items.map(repo => Object.assign(new CityWeatherDetails(), repo));
-            return result;
         }).catch(function (err) {
             console.log(err);
             return err;
