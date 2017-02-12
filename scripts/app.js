@@ -41,13 +41,6 @@
 
     // Sets app default base URL
     app.baseUrl = '/';
-    if (window.location.port === '') {
-      // if production
-      // Uncomment app.baseURL below and
-      // set app.baseURL to '/your-pathname/' if running from folder in production
-      app.baseUrl = '/vresh/';
-    }
-
     var loadedPromise = new Promise(function (resolve) {
       // Listen for template bound event to know when bindings
       // have resolved and content has been stamped to the page
@@ -89,6 +82,9 @@
         Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
       });
     }
+
+    var OpenWeatherMap_WS_BASE_URL = 'http://api.openweathermap.org/data/2.5/';
+    var OpenWeatherMap_WS_AppId = '6bd9686d6698729a80ce12d387467d60';
 
     var mockCityData = {};
     mockCityData['London'] = {
@@ -234,6 +230,43 @@
       "cod": 200
     });
 
+    var WeatherService$1 = function () {
+        function WeatherService() {
+            babelHelpers.classCallCheck(this, WeatherService);
+        }
+
+        babelHelpers.createClass(WeatherService, null, [{
+            key: 'getCityWeather',
+
+
+            // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
+            value: function getCityWeather(cityname) {
+                console.log('Mock request: ${BASE_URL}weather?q=' + cityname + '&appid=${appid}');
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        var result = Object.assign(new CityWeatherDetails(), mockCityData[cityname]);
+                        result.setTemperatures();
+                        resolve(result);
+                    }, 700);
+                });
+            }
+
+            // http://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b1b15e88fa797225412429c1c50c122a1
+
+        }, {
+            key: 'getLocationWeather',
+            value: function getLocationWeather(lat, lon) {
+                console.log('Mock request: ${BASE_URL}weather?lat=' + lat + '&lon=' + lon + '&appid=${appid}');
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        resolve(mockLocationData[0]);
+                    }, 700);
+                });
+            }
+        }]);
+        return WeatherService;
+    }();
+
     var CityWeatherDetails = function () {
         function CityWeatherDetails() {
             babelHelpers.classCallCheck(this, CityWeatherDetails);
@@ -276,7 +309,7 @@
             value: function updateDetails() {
                 var _this = this;
 
-                return WeatherService.getRepoDetails(this.owner.login, this.name).then(function (repo) {
+                return WeatherService$1.getRepoDetails(this.owner.login, this.name).then(function (repo) {
                     _this.setStargazers(repo.stargazers_count);
                     Object.keys(repo).filter(function (k) {
                         return typeof repo[k] !== 'function' && k !== 'stargazersHistory' && k !== 'downloadsHistory';
@@ -311,13 +344,15 @@
 
             // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
             value: function getCityWeather(cityname) {
-                console.log('Mock request: ${BASE_URL}weather?q=' + cityname + '&appid=${appid}');
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        var result = Object.assign(new CityWeatherDetails(), mockCityData[cityname]);
-                        result.setTemperatures();
-                        resolve(result);
-                    }, 700);
+                return fetch(OpenWeatherMap_WS_BASE_URL + 'weather?q=' + cityname + '&appid=' + OpenWeatherMap_WS_AppId).then(function (response) {
+                    return response.json();
+                }).then(function (response) {
+                    var result = Object.assign(new CityWeatherDetails(), response);
+                    result.setTemperatures();
+                    return result;
+                }).catch(function (err) {
+                    console.log(err);
+                    return Promise.reject(err);
                 });
             }
 
@@ -326,11 +361,11 @@
         }, {
             key: 'getLocationWeather',
             value: function getLocationWeather(lat, lon) {
-                console.log('Mock request: ${BASE_URL}weather?lat=' + lat + '&lon=' + lon + '&appid=${appid}');
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        resolve(mockLocationData[0]);
-                    }, 700);
+                return fetch(OpenWeatherMap_WS_BASE_URL + 'weather?lat=' + lat + '&lon=' + lon + '&appid=' + OpenWeatherMap_WS_AppId).then(function (response) {
+                    return response.json();
+                }).catch(function (err) {
+                    console.log(err);
+                    return Promise.reject(err);
                 });
             }
         }]);
