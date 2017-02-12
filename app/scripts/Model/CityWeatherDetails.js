@@ -4,7 +4,17 @@ export default class CityWeatherDetails {
 
     constructor () {
         this.stargazersHistory = this.stargazersHistory || [];
-        this.downloadsHistory = this.downloadsHistory || [];
+    }
+
+    setTemperatures () {
+        if (this.main) {
+            this.main.tempf = Math.round(this.main.temp);
+            this.main.tempc = Math.round(CityWeatherDetails.fToC(this.main.temp));
+        }
+    }
+
+    static fToC (f) {
+        return (f - 32) * 5/9;
     }
 
     setStargazers (value) {
@@ -38,38 +48,6 @@ export default class CityWeatherDetails {
                 this[k] = repo[k];
             });
             return repo;
-        });
-    }
-
-    setDownloads (value) {
-        if (value !== +value) {
-            return;
-        }
-
-        var date = new Date();
-        this.downloadsHistory = this.downloadsHistory || [];
-        if (!this.downloadsHistory.length || this.downloads !== value) {
-            this.downloadsHistory.push({
-                date: this.downloads_lastUpdateDate,
-                value: value
-            });
-        }
-
-        if (this.downloads !== value) {
-            this.downloads = value;
-            this.downloads_lastUpdateDate = date;
-        }
-    }
-
-    updateDownloads () {
-        if (this.fork) {
-            // TODO: actually check the NPM package target
-            return Promise.resolve(0);
-        }
-        this.downloads_lastRequestDate = new Date();
-        return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
-            this.setDownloads(dls.downloads);
-            return dls;
         });
     }
 }

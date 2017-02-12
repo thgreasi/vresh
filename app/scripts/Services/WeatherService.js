@@ -10,7 +10,9 @@ export class WeatherService {
     // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
     static getCityWeather (cityname) {
         return fetch(`${BASE_URL}weather?q=${cityname}&appid=${appid}`).then(function (response) {
-            return response.json();
+            var result = Object.assign(new CityWeatherDetails(), response.json());
+            result.setTemperatures();
+            return result;
         }).catch(function (err) {
             console.log(err);
             return err;
