@@ -111,7 +111,7 @@
         /*@apply(--paper-font-body1);*/
         flex-wrap: nowrap;
       }
-      
+
 
       .weather-dashboard-item-restvalues {
         display: flex;
@@ -126,6 +126,23 @@
         flex: 1 0 90px;
         margin-left: 10px;
         margin-right: 10px;
+      }
+
+      .weather-dashboard-temp-item {
+        background-color: var(--paper-red-500);
+        color: #FFF;
+      }
+      .weather-dashboard-humidity-item {
+        background-color: var(--paper-blue-500);
+        color: #FFF;
+      }
+      .weather-dashboard-windspeed-item {
+        background-color: var(--paper-grey-500);
+        color: #FFF;
+      }
+      .weather-dashboard-winddirection-item {
+        background-color: var(--paper-green-500);
+        color: #FFF;
       }
     </style>
 
@@ -151,7 +168,7 @@
     </paper-material>
 
     <div class="weather-dashboard-item-restvalues">
-      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+      <paper-material elevation="1" class="weather-dashboard-item weather-dashboard-temp-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_thermometer" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
 
         <div class="weather-dashboard-item-details flex-main-item">
@@ -170,7 +187,7 @@
         </div>
       </paper-material>
 
-      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+      <paper-material elevation="1" class="weather-dashboard-item weather-dashboard-humidity-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_raindrop" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
 
         <div class="weather-dashboard-item-details flex-main-item">
@@ -182,7 +199,7 @@
         </div>
       </paper-material>
 
-      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+      <paper-material elevation="1" class="weather-dashboard-item weather-dashboard-windspeed-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_strong_wind" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
         <!-- <iron-icon icon="weather-icons:wi_wind_beaufort_0"></iron-icon>
         <iron-icon icon="weather-icons:wi_wind_beaufort_1"></iron-icon>
@@ -207,7 +224,7 @@
         </div>
       </paper-material>
 
-      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+      <paper-material elevation="1" class="weather-dashboard-item weather-dashboard-winddirection-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_wind_direction"
                    class="weather-dashboard-item-icon flex-main-item"
                    style$="transform: rotate({{ item.wind.deg }}deg);"></iron-icon>
