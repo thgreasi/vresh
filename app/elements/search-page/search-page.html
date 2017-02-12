@@ -99,8 +99,8 @@
       </form>
     </paper-material>
     
-    <openweathermap-search search-term="{{ searchObject.searchTerm }}" 
-                   saved-items="{{ savedItems }}"></github-search>
+    <openweathermap-search search-params="{{ searchObject }}"
+                           saved-items="{{ savedItems }}"></github-search>
   </template>
 
   <script>
@@ -160,10 +160,10 @@
           if (!searchTerm && !searchCoords) {
             this.set('searchObject', null);
           }
-          this.set('searchObject', {
-            searchTerm: searchTerm,
-            searchCoords: searchCoords
-          });
+          // this.set('searchObject', {
+          //   searchTerm: searchTerm,
+          //   searchCoords: searchCoords
+          // });
         },
 
         _searchTermUnDebouncedChangedObserver: function (newValue) {
@@ -175,11 +175,19 @@
 
         setSearchTerm: function () {
           this.set('searchTerm', this.searchTermTmp || '');
+          this.set('searchObject', {
+            searchTerm: this.searchTerm,
+            searchCoords: null
+          });
         },
 
         getGeoLocation: function () {
           navigator.geolocation.getCurrentPosition((position) => {
             this.set('searchCoords', position.coords);
+            this.set('searchObject', {
+              searchTerm: null,
+              searchCoords: this.searchCoords
+            });
             // {
             //   "latitude": 38.4636,
             //   "longitude": 23.5994,
@@ -203,6 +211,7 @@
             if (this.searchTermTmp === undefined && this.searchTerm !== undefined) {
               this.$.lastSearchTermStorage.removeEventListener('value-changed', lastValueLoadedFn);
               this.set('searchTermTmp', this.searchTerm || '');
+              this.setSearchTerm();
               this.$.searchInput.value = this.searchTermTmp;
             }
           };

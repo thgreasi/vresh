@@ -22,7 +22,9 @@ export class WeatherService {
         console.log(`Mock request: \${BASE_URL}weather?lat=${lat}&lon=${lon}&appid=\${appid}`);
         return new Promise(resolve => {
             setTimeout(() => {
-                resolve(mockLocationData[0]);
+                var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
+                result.setTemperatures();
+                resolve(result);
             }, 700);
         });
     }

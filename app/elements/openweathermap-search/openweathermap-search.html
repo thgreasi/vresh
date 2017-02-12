@@ -106,11 +106,18 @@
         is: 'openweathermap-search',
 
         properties: {
-          searchTerm: {
-            type: String,
+          // searchTerm: {
+          //   type: String,
+          //   // value: 'Welcome!',
+          //   notify: true,
+          //   observer: '_debounced_searchTermChanged'
+          // },
+
+          searchParams: {
+            type: Object,
             // value: 'Welcome!',
             notify: true,
-            observer: '_debounced_searchTermChanged'
+            observer: '_debounced_searchParamsChanged'
           },
 
           savedItems: {
@@ -137,20 +144,55 @@
           }
         },
 
-        _debounced_searchTermChanged: function() {
-          this.debounce('_searchTermChanged', function() {
-           this._searchTermChanged();
+        // _debounced_searchTermChanged: function() {
+        //   this.debounce('_searchTermChanged', function() {
+        //    this._searchTermChanged();
+        //   }, 500);
+        // },
+
+        // _searchTermChanged: function () {
+        //   if (!this.searchTerm || this.searchTerm.length < 3) {
+        //     this._setCityWeather([]);
+        //     this._setActiveCityWeatherPromise(null);
+        //   }
+
+        //   var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+        //   var promise = searchProvider.getCityWeather(this.searchTerm);
+        //   this._setActiveCityWeatherPromise(promise);
+        //   promise.then(data => {
+        //     // ensure that the user hasn't initiated
+        //     // a new search
+        //     if (this.activeCityWeatherPromise === promise) {
+        //       if (data && data.name) {
+        //         this._setCityWeather(data);
+        //       } else {
+        //         this._setCityWeather(null);
+        //       }
+        //       this._setActiveCityWeatherPromise(null);
+        //     }
+        //   }, () => {
+        //     this._setCityWeather(null);
+        //   });
+        // },
+
+        _debounced_searchParamsChanged: function() {
+          this.debounce('_searchParamsChanged', function() {
+           this._searchParamsChanged();
           }, 500);
         },
 
-        _searchTermChanged: function () {
-          if (!this.searchTerm || this.searchTerm.length < 3) {
+        _searchParamsChanged: function () {
+          if (!this.searchParams ||
+            (!this.searchParams.searchTerm && !this.searchParams.searchCoords)) {
             this._setCityWeather([]);
             this._setActiveCityWeatherPromise(null);
+            return;
           }
 
           var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-          var promise = searchProvider.getCityWeather(this.searchTerm);
+          var promise = this.searchParams.searchTerm ?
+            searchProvider.getCityWeather(this.searchParams.searchTerm) :
+            searchProvider.getLocationWeather(this.searchParams.searchCoords.latitude, this.searchParams.searchCoords.longitude);
           this._setActiveCityWeatherPromise(promise);
           promise.then(data => {
             // ensure that the user hasn't initiated

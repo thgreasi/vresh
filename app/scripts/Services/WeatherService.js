@@ -25,6 +25,10 @@ export class WeatherService {
     static getLocationWeather (lat, lon) {
         return fetch(`${BASE_URL}weather?lat=${lat}&lon=${lon}&appid=${appid}`).then(function (response) {
             return response.json();
+        }).then(function (response) {
+            var result = Object.assign(new CityWeatherDetails(), response);
+            result.setTemperatures();
+            return result;
         }).catch(function (err) {
             console.log(err);
             return Promise.reject(err);
