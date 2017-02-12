@@ -8,13 +8,18 @@ export default class CityWeatherDetails {
 
     setTemperatures () {
         if (this.main) {
-            this.main.tempf = Math.round(this.main.temp);
-            this.main.tempc = Math.round(CityWeatherDetails.fToC(this.main.temp));
+            this.main.tempc = Math.round(this.main.temp - 273);
+            // this.main.tempc = Math.round(CityWeatherDetails.fToC(this.main.temp));
+            this.main.tempf = Math.round(CityWeatherDetails.cToF(this.main.tempc));
         }
     }
 
     static fToC (f) {
         return (f - 32) * 5/9;
+    }
+
+    static cToF (c) {
+        return (c * 9 / 5) + 32;
     }
 
     setStargazers (value) {
