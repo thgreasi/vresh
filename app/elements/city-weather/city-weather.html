@@ -82,6 +82,7 @@
 
       .weather-dashboard-item-details {
         display: flex;
+        flex: 1 0 50%;
         flex-direction: column;
         align-items: center;
         justify-content: space-evenly;
@@ -89,12 +90,13 @@
       }
 
       .weather-dashboard-item-value {
-        /*@apply(--paper-font-title);*/
-        @apply(--paper-font-body2);
+        @apply(--paper-font-title);
+        /*@apply(--paper-font-body2);*/
+        flex-wrap: nowrap;
       }
       .weather-dashboard-item-description {
-        /*@apply(--paper-font-subhead);*/
-        @apply(--paper-font-body5);
+        @apply(--paper-font-subhead);
+        /*@apply(--paper-font-body5);*/
       }
 
       .weather-dashboard-main-item .weather-dashboard-item-value {
@@ -103,13 +105,17 @@
 
       .weather-dashboard-item-restvalues {
         display: flex;
-        flex-direction: row;
+        flex-flow: row wrap;
         justify-content: space-between;
-        align-items: center;
+        align-items: stretch;
+        margin-left: -10px;
+        margin-right: -10px;
       }
 
       .weather-dashboard-item-restvalues > .weather-dashboard-item {
-        flex: 0 1 100px;
+        flex: 1 0 80px;
+        margin-left: 10px;
+        margin-right: 10px;
       }
     </style>
 
