@@ -1,0 +1,146 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+</head><body><dom-module id="cities-list-item">
+  <template>
+    <style>
+      :host {
+        /*display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;*/
+      }
+
+      .itemsCont {
+        display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;
+      }
+
+      .itemname-cont {
+        flex: 1 0 0;
+        display: inline-block;
+        width: auto;
+        line-height: 3em;
+      }
+
+      .stats-cont {
+        flex: 0 0px 0px;
+        display: flex;
+        flex-flow: column;
+      }
+
+      .stargazers-cont,
+      .downloads-cont {
+        flex: 1;
+        display: inline-block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .cities-icon {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 0.5;
+      }
+
+      .cities-name {
+        font-size: 1.5em;
+        vertical-align: middle;
+      }
+
+      [icon="star"] {
+        color: var(--paper-yellow-700);
+      }
+
+      paper-icon-button {
+        padding: 0;
+        width: 24px;
+        height: 24px;
+      }
+
+      [icon="file-download"] {
+        color: var(--paper-blue-a700);
+      }
+
+      .downloads-cont,
+      .stargazers-cont {
+        text-align: right;
+      }
+
+      .positive-diff {
+        color: #61de61;
+        font-weight: bold;
+      }
+
+      .negative-diff {
+        color: red;
+        font-weight: bold;
+      }
+
+      .yellow-button {
+        color: var(--paper-yellow-700);
+      }
+
+    </style>
+
+    <div id="itemsCont" class="itemsCont">
+
+      <div class="itemname-cont">
+        <template is="dom-if" if="{{!item.fork}}">
+          <iron-icon icon="app-svg-icons:cities-icon"></iron-icon>
+        </template>
+
+        <template is="dom-if" if="{{item.fork}}">
+          <iron-icon icon="app-svg-icons:cities-forked-icon"></iron-icon>
+        </template>
+
+        <span class="cities-name">{{ item.name }}</span>
+      </div>
+
+      <div class="stats-cont">
+        <div class="stargazers-cont">
+          <span class="diff">
+            <template is="dom-if" if="{{ stargazersDiff }}">
+              <span class$="{{ getDiffClass(stargazersDiff) }}">
+                <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
+                {{ normalizeNumberLength(stargazersDiff) }}
+              </span>
+            </template>
+          </span>
+
+          <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
+          <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarItemTap"></paper-icon-button>
+        </div>
+
+        <div class="downloads-cont">
+          <template is="dom-if" if="{{ item.downloads }}">
+
+            <span class="diff">
+              <template is="dom-if" if="{{ downloadsDiff }}">
+                <span class$="{{ getDiffClass(downloadsDiff) }}">
+                  <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
+                  {{ normalizeNumberLength(downloadsDiff) }}
+                </span>
+              </template>
+            </span>
+
+            <span>{{ normalizeNumberLength(item.downloads) }}</span>
+            <iron-icon icon="file-download"></iron-icon>
+          </template>
+        </div>
+      </div>
+
+    </div>
+
+    <paper-toast id="unstarToast" duration="3000" text="Itemsitory deleted!">
+      <paper-button on-tap="undoUnstar" class="yellow-button">Undo</paper-button>
+    </paper-toast>
+  </template>
+
+  </dom-module>
+<script src="cities-list-item.js"></script></body></html>

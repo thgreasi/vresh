@@ -1,0 +1,119 @@
+'use strict';
+
+(function () {
+  'use strict';
+
+  Polymer({
+    is: 'openweathermap-search',
+
+    properties: {
+      searchTerm: {
+        type: String,
+        // value: 'Welcome!',
+        notify: true,
+        observer: '_debounced_searchTermChanged'
+      },
+
+      savedItems: {
+        type: Array,
+        notify: true
+      },
+
+      cityWeather: {
+        type: Object,
+        default: function _default(f) {
+          return null;
+        },
+        notify: true,
+        readOnly: true
+      },
+
+      activeCityWeatherPromise: {
+        type: Object,
+        default: function _default(f) {
+          return null;
+        },
+        notify: true,
+        readOnly: true
+      }
+    },
+
+    _debounced_searchTermChanged: function _debounced_searchTermChanged() {
+      this.debounce('_searchTermChanged', function () {
+        this._searchTermChanged();
+      }, 500);
+    },
+
+    _searchTermChanged: function _searchTermChanged() {
+      var _this = this;
+
+      if (!this.searchTerm || this.searchTerm.length < 3) {
+        this._setCityWeather([]);
+        this._setActiveCityWeatherPromise(null);
+      }
+
+      var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+      var promise = searchProvider.getCityWeather(this.searchTerm);
+      this._setActiveCityWeatherPromise(promise);
+      promise.then(function (data) {
+        // ensure that the user hasn't initiated
+        // a new search
+        if (_this.activeCityWeatherPromise === promise) {
+          if (data && data.name) {
+            _this._setCityWeather(data);
+          } else {
+            _this._setCityWeather(null);
+          }
+          _this._setActiveCityWeatherPromise(null);
+        }
+      }, function () {
+        _this._setCityWeather(null);
+      });
+    },
+
+    toggleCityListItemsSelection: function toggleCityListItemsSelection(e, detail) {
+      var button = e.currentTarget || e.target;
+      var items = Array.prototype.slice.apply(document.querySelectorAll(button.dataset.targetContainer + ' search-cities-list-item'));
+
+      if (button.dataset.targetType) {
+        (function () {
+          var invertFilter = button.dataset.targetType.indexOf('!') === 0;
+          var filterPropName = button.dataset.targetType;
+          if (invertFilter) {
+            filterPropName = filterPropName.replace('!', '');
+          }
+
+          items = items.filter(function (element) {
+            return element.item && !element.item[filterPropName] === invertFilter;
+          });
+        })();
+      }
+      this._toggleCityListItemsSelection(items);
+    },
+
+    _toggleCityListItemsSelection: function _toggleCityListItemsSelection(items) {
+      var selected = [];
+      var unselected = [];
+
+      items.forEach(function (element) {
+        if (element.isSaved) {
+          selected.push(element);
+        } else {
+          unselected.push(element);
+        }
+      });
+
+      if (selected.length === items.length) {
+        selected.forEach(function (element) {
+          element.toggleSaveUserCity();
+        });
+      } else {
+        unselected.forEach(function (element) {
+          element.toggleSaveUserCity();
+        });
+      }
+    },
+
+    ready: function ready() {}
+  });
+})();

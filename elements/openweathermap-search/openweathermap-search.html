@@ -1,0 +1,102 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+</head><body><dom-module id="openweathermap-search">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        padding: 16px 0 16px 0;
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+        background: white;
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+      }
+
+      .user-name-li {
+        @apply(--paper-font-body1);
+        position: relative;
+        padding: 8px 0;
+        cursor: pointer;
+      }
+
+      .user-name {
+        font-size: 1.5em;
+        font-weight: normal;
+      }
+
+    </style>
+
+    <section class="search-results">
+      <template is="dom-if" if="{{ activeCityWeatherPromise }}">
+        <header>
+          Loading weather data
+          <paper-spinner active=""></paper-spinner>
+        </header>
+      </template>
+
+      <template is="dom-if" if="{{ cityWeather }}">
+        <city-weather item="{{ cityWeather }}" saved-items="{{ savedItems }}"></city-weather>
+      </template>
+    </section>
+
+  </template>
+
+  </dom-module>
+<script src="openweathermap-search.js"></script></body></html>
