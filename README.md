@@ -21,3 +21,15 @@ You can then start the dev server by running:
 ```
 gulp serve
 ```
+
+# Running the dist build
+First run the default `gulp` task to build the dist files
+```
+gulp
+```
+
+Then serve the contents of the `dist` folder with any HTTP server.
+For exampe you can use python's simple HTTP server:
+```
+python -m SimpleHTTPServer 8000
+```
