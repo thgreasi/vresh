@@ -883,7 +883,7 @@ var glyphs = iconmap2keys.map(k => {
 
     var horizAdvX = +(g.attributes['horiz-adv-x'] && g.attributes['horiz-adv-x'].value);
     var originalHotizAdvX = horizAdvX;
-    if (horizAdvX > 0 && horizAdvX < 1000) {
+    if (horizAdvX > 0 && horizAdvX < fontHorizAdvX) {
         horizAdvX = fontHorizAdvX;
     }
     if (isNaN(horizAdvX)) {
@@ -891,13 +891,15 @@ var glyphs = iconmap2keys.map(k => {
     }
 
     var viewBox = [
-        originalHotizAdvX < 1000 ? horizAdvX / 4 : 0,// -horizAdvX,
+        originalHotizAdvX < 1000 ? -horizAdvX / 4 : 0,// -horizAdvX,
         horizAdvX > 2000 ? horizAdvX / 4 : 0,// -horizAdvX - 2 * descent,
         horizAdvX,
         horizAdvX
     ].join(' ');
     if (g) {
-        return g.outerHTML.replace('<glyph ', `<g id="${k}" viewBox="${viewBox}" transform="rotate(180, ${horizAdvX/2}, ${horizAdvX/2})"><path `).replace('/>', '></path></g>');
+        // transform="scale(1,-1), translate(0, ${-horizAdvX})"
+        // transform="rotate(180, ${horizAdvX/2}, ${horizAdvX/2})"
+        return g.outerHTML.replace('<glyph ', `<g id="${k}" viewBox="${viewBox}" ><path transform="scale(1,-1), translate(0, ${-horizAdvX})" `).replace('/>', '></path></g>');
     }
 }).filter(x => x);
 
