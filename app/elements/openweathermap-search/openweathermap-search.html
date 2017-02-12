@@ -93,69 +93,6 @@
 
       <template is="dom-if" if="{{ cityWeather }}">
         <city-weather item="{{ cityWeather }}" saved-items="{{ savedItems }}"></city-weather>
-
-        <!-- <hl />
-        <hr />
-        <header class="flex-item-with-addons">
-          <span class="flex-main-item">
-            <iron-icon icon="social:location-city"></iron-icon>
-            <span>{{ cityWeather.name }}</span>
-          </span>
-
-          <paper-button class="flex-item-addon"
-            on-tap="toggleCityListItemsSelection"
-            data-target-container=".search-results">
-            <iron-icon icon="icons:star-half"></iron-icon>
-          </paper-button>
-        </header>
-
-        <div class="weather-dashboard">
-          <paper-material elevation="1" class="weather-dashboard-item">
-            <iron-icon icon="weather-icons:wi_fahrenheit"></iron-icon>
-            <span class="weather-dashboard-item-value">{{ cityWeather.main.tempf }}</span>
-
-            <iron-icon icon="weather-icons:wi_celsius"></iron-icon>
-            <span class="weather-dashboard-item-value">{{ cityWeather.main.tempc }}</span>
-          </paper-material>
-          <paper-material elevation="1" class="weather-dashboard-item">
-            <iron-icon icon="weather-icons:wi_wind_direction"></iron-icon>
-            <span class="weather-dashboard-item-value">{{ cityWeather.wind.speed }}</span>
-            <iron-icon icon="weather-icons:wi_windy"></iron-icon>
-            <span class="weather-dashboard-item-value">{{ cityWeather.wind.deg }}</span>
-
-            <iron-icon icon="weather-icons:wi_wind_beaufort_0"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_1"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_2"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_3"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_4"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_5"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_6"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_7"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_8"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_9"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_10"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_11"></iron-icon>
-            <iron-icon icon="weather-icons:wi_wind_beaufort_12"></iron-icon>
-          </paper-material>
-          <paper-material elevation="1" class="weather-dashboard-item">
-          <iron-icon icon="weather-icons:wi_raindrop"></iron-icon>
-            <span class="weather-dashboard-item-value">"humidity": 81,</span>
-            <span class="weather-dashboard-item-value">{{ cityWeather.main.humidity }}</span>
-          </paper-material>
-          <paper-material elevation="1" class="weather-dashboard-item">
-            <span class="weather-dashboard-item-value">{{ cityWeather.main.pressure }}</span>
-          </paper-material>
-        </div> -->
-
-        <!-- <paper-material class="no-padding" elevation="1">
-          <ul class="unstyled">
-            <template is="dom-repeat" items="{{ cityWeather }}">
-              <li class="paper-list-item">
-                <search-cities-list-item item="{{ item }}" saved-items="{{ savedItems }}"></search-cities-list-item>
-              </li>
-            </template>
-          </ul>
-        </paper-material> -->
       </template>
     </section>
 
