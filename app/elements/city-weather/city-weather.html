@@ -1,0 +1,307 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<dom-module id="city-weather">
+  <template>
+    <style include="shared-styles">
+      :host {
+        /*display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;*/
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .bookmark-checkbox {
+        color: var(--paper-yellow-700);
+      }
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        padding: 16px 0 16px 0;
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+        background: white;
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+      }
+
+
+      .weather-dashboard-item {
+        align-items: stretch;
+      }
+
+      .weather-dashboard-main-item .weather-dashboard-item-icon {
+        height: 100px;
+      }
+
+      .weather-dashboard-item-icon {
+        height: 50px;
+      }
+
+      .weather-dashboard-item-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        justify-self: center;
+      }
+
+      .weather-dashboard-item-value {
+        /*@apply(--paper-font-title);*/
+        @apply(--paper-font-body2);
+      }
+      .weather-dashboard-item-description {
+        /*@apply(--paper-font-subhead);*/
+        @apply(--paper-font-body5);
+      }
+
+      .weather-dashboard-main-item .weather-dashboard-item-value {
+        padding-right: 20px;
+      }
+
+      .weather-dashboard-item-restvalues {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .weather-dashboard-item-restvalues > .weather-dashboard-item {
+        flex: 0 1 100px;
+      }
+    </style>
+
+    <paper-material elevation="1" class="weather-dashboard-item weather-dashboard-main-item flex-item-with-addons">
+      <iron-icon icon="[[weatherIcon]]" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+
+      <div class="weather-dashboard-item-details flex-main-item">
+        <div class="weather-dashboard-item-value flex-item-with-addons">
+          <div on-tap="toggleStar" class="flex-item-addon">
+            <template is="dom-if" if="{{!isSaved}}">
+              <paper-icon-button class="bookmark-checkbox" icon="icons:star-border"></paper-icon-button>
+            </template>
+            <template is="dom-if" if="{{isSaved}}">
+              <paper-icon-button class="bookmark-checkbox" icon="icons:star"></paper-icon-button>
+            </template>
+          </div>
+
+          <span class="flex-main-item">{{ item.name }}</span>
+        </div>
+
+        <div class="weather-dashboard-item-description">{{ weatherDescription }}</div>
+      </div>
+    </paper-material>
+
+    <div class="weather-dashboard-item-restvalues">
+      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+        <iron-icon icon="weather-icons:wi_thermometer" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+
+        <div class="weather-dashboard-item-details flex-main-item">
+          <div class="weather-dashboard-item-value flex-item-with-addons">
+            <template is="dom-if" if="{{useFahrenheit}}">
+                <span class="flex-main-item">{{ item.main.tempf }}</span>
+                <iron-icon icon="weather-icons:wi_fahrenheit" class="weather-dashboard-item-icon flex-main-item flex-item-addon"></iron-icon>
+            </template>
+            <template is="dom-if" if="{{!useFahrenheit}}">
+              <span class="flex-main-item">{{ item.main.tempc }}</span>
+              <iron-icon icon="weather-icons:wi_celsius" class="weather-dashboard-item-icon flex-main-item flex-item-addon"></iron-icon>
+            </template>
+          </div>
+
+          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
+        </div>
+      </paper-material>
+
+
+      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+        <iron-icon icon="weather-icons:wi_windy" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+        <!-- <iron-icon icon="weather-icons:wi_wind_beaufort_0"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_1"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_2"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_3"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_4"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_5"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_6"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_7"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_8"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_9"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_10"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_11"></iron-icon>
+        <iron-icon icon="weather-icons:wi_wind_beaufort_12"></iron-icon> -->
+
+        <div class="weather-dashboard-item-details flex-main-item">
+          <div class="weather-dashboard-item-value flex-item-with-addons">
+              <span class="flex-main-item">{{ item.wind.speed }}</span>
+          </div>
+
+          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
+        </div>
+      </paper-material>
+
+
+      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+        <iron-icon icon="weather-icons:wi_wind_direction" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+
+        <div class="weather-dashboard-item-details flex-main-item">
+          <div class="weather-dashboard-item-value flex-item-with-addons">
+              <span class="flex-main-item">{{ item.wind.deg }}</span>
+          </div>
+
+          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
+        </div>
+      </paper-material>
+
+      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+        <iron-icon icon="weather-icons:wi_raindrop" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+
+        <div class="weather-dashboard-item-details flex-main-item">
+          <div class="weather-dashboard-item-value flex-item-with-addons">
+              <span class="flex-main-item">{{ item.main.humidity }}</span>
+          </div>
+
+          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
+        </div>
+      </paper-material>
+    </div>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'city-weather',
+
+        properties: {
+          useFahrenheit: {
+            type: Boolean,
+            value: function() { return false; }, 
+          },
+          item: {
+            type: Object,
+            notify: true,
+            value: function() { return {}; },
+            observer: '_itemChanged'
+          },
+          weatherIcon: {
+            type: String,
+            notify: true,
+            computed: '_computeWeatherIcon(item)'
+          },
+          weatherDescription: {
+            type: String,
+            notify: true,
+            computed: '_computeWeatherDescription(item)'
+          },
+          savedItems: {
+            type: Array,
+            notify: true
+          },
+          savedItem: {
+            type: Object,
+            readOnly: true
+          },
+          isSaved: {
+            type: Boolean,
+            readOnly: true
+          }
+        },
+
+        observers: [
+            '_itemChanged(item, savedItems)'
+        ],
+
+        _itemChanged: function() {
+          if (this.item &&
+              this.savedItems &&
+              this.savedItems.length) {
+
+            if (!this.savedItem ||
+                this.savedItem.full_name !== this.item.full_name ||
+                this.savedItems.indexOf(this.savedItem) < 0) {
+              this._setSavedItem(
+                this.savedItems
+                  .filter(x => x.full_name === this.item.full_name)
+                  .shift());
+            }
+          }
+          this._setIsSaved(!!this.savedItem);
+        },
+
+        _computeWeatherIcon: function(item) {
+          if (item && item.weather && item.weather[0] && item.weather[0].id) {
+            var weatherIconID = item.weather[0].id;
+            return `weather-icons:wi_owm_${weatherIconID}`;
+          }
+          return `weather-icons:wi_wu_unknown`;
+        },
+
+        _computeWeatherDescription: function(item) {
+          if (item && item.weather && item.weather[0] && item.weather[0].description) {
+            return item.weather[0].description;
+            return `weather-icons:wi_owm_${weatherIconID}`;
+          }
+        },
+
+        toggleStar: function() {
+          if (this.savedItems) {
+            if (this.isSaved) {
+              // this.splice('savedItems', this.savedItems.indexOf(this.savedItem), 1);
+              this.savedItems.splice(this.savedItems.indexOf(this.savedItem), 1);
+            } else {
+              // this.push('savedItems', this.item);
+              this.savedItems.push(this.item);
+            }
+            this.set('savedItems', this.savedItems.slice());
+          }
+        },
+
+        ready: function() {
+
+        }
+      });
+    })();
+  </script>
+</dom-module>
