@@ -42,15 +42,15 @@ app.reloadPage = function() {
   }
 };
 
-var citiesOnLoadPromise = localforage.getItem('data.cities').then(cities => {
-    if (!Array.isArray(cities)) {
-      cities = [];
+var citiesOnLoadPromise = localforage.getItem('data.items').then(items => {
+    if (!Array.isArray(items)) {
+      items = [];
     }
 
-    cities = cities.map(repo => Object.assign(new CityWeatherDetails(), repo));
+    items = items.map(repo => Object.assign(new CityWeatherDetails(), repo));
 
-    console.log('LOADED!', cities);
-    return cities;
+    console.log('LOADED!', items);
+    return items;
 }).catch(() => []);
 
 loadedPromise.then(() => {
@@ -62,7 +62,7 @@ loadedPromise.then(() => {
 
     if (cities.length) {
       setTimeout(() => {
-        app.route = 'citiesitories';
+        app.route = 'cities';
         app.reloadPage();
       }, 0);
     }

@@ -1,0 +1,195 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="my-cities-page">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        padding: 16px 0 16px 0;
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+        background: white;
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+      }
+
+      /* page styles */
+      .dropdown-content {
+        top: 20px;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+    </style>
+
+    <!-- <section class="text-right">
+      <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+
+      <iron-dropdown horizontal-align="right" vertical-align="top" opened={{sortingDropDownOpened}}>
+        <paper-material class="dropdown-content no-padding" elevation="1">
+          <paper-listbox attr-for-selected="value"
+              selected="{{ sortingType }}"
+              on-iron-select="sortingOptionSelected">
+            <template is="dom-repeat" items="[[sortingOptions]]">
+              <paper-item value="[[item.value]]">[[item.name]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-material>
+      </iron-dropdown>
+    </section> -->
+    <template is="dom-if" if="{{!items.length}}">
+      <h5>No locations bookmarked yet...</h5>
+    </template>
+    
+    <paper-material class="no-padding" elevation="1">
+      <cities-list items="{{ items }}" sort="{{ sortingType }}"></cities-list>
+    </paper-material>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'my-cities-page',
+
+        properties: {
+          items: {
+            type: Array,
+            notify: true,
+          },
+          sortingOptions: {
+            type: Array,
+            notify: true,
+            value: () => [
+              { name: 'No sort', value: 'none' },
+              { name: 'By name', value: 'name' },
+              { name: 'By stars', value: 'stargazers_count' },
+              { name: 'By downloads', value: 'downloads' }
+            ]
+          },
+          sortingType: {
+            type: String,
+            notify: true,
+            value: () => 'none'
+          },
+          sortingDropDownOpened: {
+            type: Boolean,
+            notify: true
+          }
+        },
+
+        observers: [
+          '_itemsChanged(items.*)'
+        ],
+
+        // _debounced_itemsChanged: function(changeRecord) {
+        //   this.debounce('_itemsChanged', () => {
+        //    this._itemsChanged.apply(this, arguments);
+        //   }, 200);
+        // },
+
+        _itemsChanged(changeRecord) {
+          console.log('_itemsChanged', changeRecord);
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.setItem('data.items', this.items).then(() => {
+            console.log('Saved', 'data.items', this.items);
+          });
+        },
+
+        openSortingDropDown: function () {
+          this.set('sortingDropDownOpened', true);
+        },
+
+        sortingOptionSelected: function () {
+          this.set('sortingDropDownOpened', false);
+        },
+
+        refresh: function() {
+          this.items.map((item) => {
+            return Promise.all([
+              item.updateDetails().then(() => '#${i}.stargazers_count'),
+              item.updateDownloads().then(() => '#${i}.downloads')
+            ].map((p) => p.then((path) => {
+              if (!path) {
+                return;
+              }
+              let i = this.items.indexOf(item);
+              if (i >= 0) {
+                let p = `items.${path.replace('${i}', i)}`;
+                this.notifyPath(p, this.get(p));
+              }
+            }))).catch((e) => { console.error('Error:', e); });
+          });
+        },
+
+        ready: function() {
+
+        }
+      });
+    })();
+  </script>
+</dom-module>

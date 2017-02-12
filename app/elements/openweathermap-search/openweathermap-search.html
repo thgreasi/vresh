@@ -91,7 +91,7 @@
         </header>
       </template>
 
-      <template is="dom-if" if="{{ cityWeather }}">
+      <template is="dom-if" if="{{ cityWeather.name }}">
         <city-weather item="{{ cityWeather }}" saved-items="{{ savedItems }}"></city-weather>
       </template>
     </section>

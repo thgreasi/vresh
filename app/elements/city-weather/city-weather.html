@@ -292,15 +292,20 @@
         ],
 
         _itemChanged: function() {
+          if (this.item !== this.savedItem) {
+            this._setSavedItem(null);
+            this._setIsSaved(false);
+          }
+
           if (this.item &&
               this.savedItems) {
 
             if (!this.savedItem ||
-                this.savedItem.full_name !== this.item.full_name ||
+                this.savedItem.name !== this.item.name ||
                 this.savedItems.indexOf(this.savedItem) < 0) {
               
               var listItem = this.savedItems
-                  .filter(x => x.full_name === this.item.full_name)
+                  .filter(x => x.name === this.item.name)
                   .shift();
               this._setSavedItem(listItem);
             }

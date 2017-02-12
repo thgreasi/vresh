@@ -1,0 +1,189 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<dom-module id="cities-list-item">
+  <template>
+    <style>
+      :host {
+        /*display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;*/
+      }
+
+      .itemsCont {
+        display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;
+      }
+
+      .itemname-cont {
+        flex: 1 0 0;
+        display: inline-block;
+        width: auto;
+        line-height: 3em;
+      }
+
+      .stats-cont {
+        flex: 0 0px 0px;
+        display: flex;
+        flex-flow: column;
+      }
+
+      .info-cont {
+        flex: 1;
+        display: inline-block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .cities-icon {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 0.5;
+      }
+
+      .item-name {
+        font-size: 1.5em;
+        vertical-align: middle;
+      }
+
+      [icon="star"] {
+        color: var(--paper-yellow-700);
+      }
+
+      paper-icon-button {
+        padding: 0;
+        width: 24px;
+        height: 24px;
+      }
+
+      .info-cont {
+        text-align: right;
+      }
+
+      .positive-diff {
+        color: #61de61;
+        font-weight: bold;
+      }
+
+      .negative-diff {
+        color: red;
+        font-weight: bold;
+      }
+
+      .yellow-button {
+        color: var(--paper-yellow-700);
+      }
+
+    </style>
+
+    <div id="itemsCont" class="itemsCont">
+
+      <div class="itemname-cont">
+        <iron-icon icon="[[weatherIcon]]"></iron-icon>
+        <span class="city-temperature">{{ item.main.tempc }}</span>
+        <iron-icon icon="weather-icons:wi_celsius"></iron-icon>
+        &nbsp;
+        <span class="item-name">{{ item.name }}</span>
+      </div>
+
+      <div class="stats-cont">
+        <div class="info-cont">
+          <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarItemTap"></paper-icon-button>
+        </div>
+      </div>
+
+    </div>
+
+    <paper-toast id="unstarToast" duration="3000" text="Location deleted!">
+      <paper-button on-tap="undoUnstar" class="yellow-button">Undo</paper-button>
+    </paper-toast>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'cities-list-item',
+
+        properties: {
+          items: {
+            type: Array,
+            notify: true
+          },
+          item: {
+            type: Object,
+            notify: true,
+            observer: '_itemChangedObserver',
+            value: function() { return {}; }
+          },
+          weatherIcon: {
+            type: String,
+            notify: true,
+            computed: '_computeWeatherIcon(item)'
+          }
+        },
+
+        observers: [
+            '_weatherChanged(item.*)'
+        ],
+
+        _weatherChanged: function (newValue) {
+
+        },
+
+
+        _itemChangedObserver: function (newValue) {
+          
+        },
+
+        _computeWeatherIcon: function(item) {
+          if (item && item.weather && item.weather[0] && item.weather[0].id) {
+            var weatherIconID = item.weather[0].id;
+            return `weather-icons:wi_owm_${weatherIconID}`;
+          }
+          return `weather-icons:wi_wu_unknown`;
+        },
+
+        unstarItemTap: function () {
+          this.$.unstarToast.show();
+          this.$.unstarToast.undoTimeout = setTimeout(() => {
+            this.$.unstarToast.undoTimeout = null;
+            // this.$.itemsCont
+            this.fire('unstar', { item: this.item });
+          }, this.$.unstarToast.duration);
+        },
+
+        undoUnstar: function () {
+          if (this.$.unstarToast.undoTimeout) {
+            clearTimeout(this.$.unstarToast.undoTimeout);
+            this.$.unstarToast.undoTimeout = null;
+          }
+        },
+
+        isPositive: function (number) {
+          return number > 0;
+        },
+
+        isNegative: function (number) {
+          return number < 0;
+        },
+
+        getDiffClass: function (diff) {
+          if (diff > 0) {
+            return 'positive-diff';
+          }
+          if (diff < 0) {
+            return 'negative-diff';
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
