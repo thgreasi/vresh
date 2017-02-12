@@ -871,13 +871,33 @@ var glyphsXmlArray = Array.slice(xml.children[0].children);
 //     }
 // }).filter(x => x);
 var glyphs = iconmap2keys.map(k => {
+    var fontHorizAdvX = 1537;
+    var ascent = 1755;
+    var descent = -293;
+
     var unicodeValue = iconmap2[k];
     var g = glyphsXmlArray.filter(g => {
         var unicode = g.attributes['unicode'] && g.attributes['unicode'].value;
         return unicode && unicode === unicodeValue;
     })[0];
+
+    var horizAdvX = +(g.attributes['horiz-adv-x'] && g.attributes['horiz-adv-x'].value);
+    var originalHotizAdvX = horizAdvX;
+    if (horizAdvX > 0 && horizAdvX < 1000) {
+        horizAdvX = fontHorizAdvX;
+    }
+    if (isNaN(horizAdvX)) {
+        horizAdvX = fontHorizAdvX;
+    }
+
+    var viewBox = [
+        originalHotizAdvX < 1000 ? horizAdvX / 4 : 0,// -horizAdvX,
+        horizAdvX > 2000 ? horizAdvX / 4 : 0,// -horizAdvX - 2 * descent,
+        horizAdvX,
+        horizAdvX
+    ].join(' ');
     if (g) {
-        return g.outerHTML.replace('<glyph ', `<g id="${k}" viewBox="-1563 -1863 1 3126" transform="rotate(180)"><path `).replace('/>', '></path></g>');
+        return g.outerHTML.replace('<glyph ', `<g id="${k}" viewBox="${viewBox}" transform="rotate(180, ${horizAdvX/2}, ${horizAdvX/2})"><path `).replace('/>', '></path></g>');
     }
 }).filter(x => x);
 
