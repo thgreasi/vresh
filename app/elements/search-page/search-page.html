@@ -90,11 +90,16 @@
           <paper-icon-button suffix on-tap="setSearchTerm"
                              icon="search" alt="search" title="search">
           </paper-icon-button>
+          <template is="dom-if" if="{{hasGeolocation}}">
+            <paper-icon-button suffix on-tap="getGeoLocation"
+                               icon="device:gps-fixed" alt="get gps prosition" title="get gps prosition">
+            </paper-icon-button>
+          </template>
         </paper-input>
       </form>
     </paper-material>
     
-    <openweathermap-search search-term="{{ searchTerm }}" 
+    <openweathermap-search search-term="{{ searchObject.searchTerm }}" 
                    saved-items="{{ savedItems }}"></github-search>
   </template>
 
@@ -123,10 +128,42 @@
             notify: false
           },
 
+          searchCoords: {
+            type: Object,
+            notify: true,
+            value: () => null
+          },
+
+          searchObject: {
+            type: Object,
+            notify: true,
+            value: () => null,
+            // observer: '_searchObjectValueObserver',
+          },
+
           savedItems: {
             type: Array,
             notify: true
           },
+
+          hasGeolocation: {
+            type: Boolean,
+            value: () => !!navigator.geolocation
+          }
+        },
+
+        observers: [
+          '_searchObjectValueObserver(searchTerm, searchCoords)'
+        ],
+
+        _searchObjectValueObserver: function (searchTerm, searchCoords) {
+          if (!searchTerm && !searchCoords) {
+            this.set('searchObject', null);
+          }
+          this.set('searchObject', {
+            searchTerm: searchTerm,
+            searchCoords: searchCoords
+          });
         },
 
         _searchTermUnDebouncedChangedObserver: function (newValue) {
@@ -138,6 +175,21 @@
 
         setSearchTerm: function () {
           this.set('searchTerm', this.searchTermTmp || '');
+        },
+
+        getGeoLocation: function () {
+          navigator.geolocation.getCurrentPosition((position) => {
+            this.set('searchCoords', position.coords);
+            // {
+            //   "latitude": 38.4636,
+            //   "longitude": 23.5994,
+            //   "altitude": 0,
+            //   "accuracy": 25000,
+            //   "altitudeAccuracy": 0,
+            //   "heading": "NaN",
+            //   "speed": "NaN"
+            // }
+          });
         },
 
         ready: function() {
