@@ -113,7 +113,7 @@
       }
 
       .weather-dashboard-item-restvalues > .weather-dashboard-item {
-        flex: 1 0 80px;
+        flex: 1 0 90px;
         margin-left: 10px;
         margin-right: 10px;
       }
@@ -147,11 +147,11 @@
         <div class="weather-dashboard-item-details flex-main-item">
           <div class="weather-dashboard-item-value flex-item-with-addons">
             <template is="dom-if" if="{{useFahrenheit}}">
-                <span class="flex-main-item">{{ item.main.tempf }}</span>
+                <span class="flex-main-item">{{ item.main.tempf }} &nbsp;</span>
                 <iron-icon icon="weather-icons:wi_fahrenheit" class="weather-dashboard-item-icon flex-main-item flex-item-addon"></iron-icon>
             </template>
             <template is="dom-if" if="{{!useFahrenheit}}">
-              <span class="flex-main-item">{{ item.main.tempc }}</span>
+              <span class="flex-main-item">{{ item.main.tempc }} &nbsp;</span>
               <iron-icon icon="weather-icons:wi_celsius" class="weather-dashboard-item-icon flex-main-item flex-item-addon"></iron-icon>
             </template>
           </div>
@@ -165,7 +165,7 @@
 
         <div class="weather-dashboard-item-details flex-main-item">
           <div class="weather-dashboard-item-value flex-item-with-addons">
-              <span class="flex-main-item">{{ item.main.humidity }}</span>
+              <span class="flex-main-item">{{ item.main.humidity }} %</span>
           </div>
 
           <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
@@ -190,7 +190,7 @@
 
         <div class="weather-dashboard-item-details flex-main-item">
           <div class="weather-dashboard-item-value flex-item-with-addons">
-              <span class="flex-main-item">{{ item.wind.speed }}</span>
+              <span class="flex-main-item">{{ item.wind.speed }} m/s</span>
           </div>
 
           <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
@@ -204,7 +204,7 @@
 
         <div class="weather-dashboard-item-details flex-main-item">
           <div class="weather-dashboard-item-value flex-item-with-addons">
-              <span class="flex-main-item">{{ item.wind.deg }}</span>
+              <span class="flex-main-item">{{ item.wind.deg }}&deg;</span>
           </div>
 
           <!-- <div class="weather-dashboard-item-description">{{ windDirection }}</div> -->
