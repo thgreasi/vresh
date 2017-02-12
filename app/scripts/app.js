@@ -3,7 +3,7 @@ import localforage from 'localforage';
 import { app, loadedPromise } from './appCore';
 import { init as appThemeInit } from './appTheme';
 
-import { WeatherService } from './Services/WeatherServiceMock';
+import { WeatherService } from './Services/WeatherService';
 import CityWeatherDetails from './Model/CityWeatherDetails';
 
 
