@@ -160,6 +160,17 @@
         </div>
       </paper-material>
 
+      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
+        <iron-icon icon="weather-icons:wi_raindrop" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
+
+        <div class="weather-dashboard-item-details flex-main-item">
+          <div class="weather-dashboard-item-value flex-item-with-addons">
+              <span class="flex-main-item">{{ item.main.humidity }}</span>
+          </div>
+
+          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
+        </div>
+      </paper-material>
 
       <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_strong_wind" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
@@ -186,7 +197,6 @@
         </div>
       </paper-material>
 
-
       <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
         <iron-icon icon="weather-icons:wi_wind_direction"
                    class="weather-dashboard-item-icon flex-main-item"
@@ -198,18 +208,6 @@
           </div>
 
           <!-- <div class="weather-dashboard-item-description">{{ windDirection }}</div> -->
-        </div>
-      </paper-material>
-
-      <paper-material elevation="1" class="weather-dashboard-item flex-item-with-addons">
-        <iron-icon icon="weather-icons:wi_raindrop" class="weather-dashboard-item-icon flex-main-item"></iron-icon>
-
-        <div class="weather-dashboard-item-details flex-main-item">
-          <div class="weather-dashboard-item-value flex-item-with-addons">
-              <span class="flex-main-item">{{ item.main.humidity }}</span>
-          </div>
-
-          <!-- <div class="weather-dashboard-item-description">{{ weatherDescription }}</div> -->
         </div>
       </paper-material>
     </div>
