@@ -1,4 +1,4 @@
-import { location } from 'Window';
+import location from 'location';
 
 export var CORS_SERVICE_URL_PREFIX = 'https://cors-anywhere.herokuapp.com/';
 
