@@ -1,10 +1,11 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('localforage')) :
-    typeof define === 'function' && define.amd ? define(['localforage'], factory) :
-    (factory(global.localforage));
-}(this, function (localforage) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('localforage'), require('location')) :
+    typeof define === 'function' && define.amd ? define(['localforage', 'location'], factory) :
+    (factory(global.localforage,global.location));
+}(this, function (localforage,location) { 'use strict';
 
     localforage = 'default' in localforage ? localforage['default'] : localforage;
+    location = 'default' in location ? location['default'] : location;
 
     var babelHelpers = {};
 
@@ -90,7 +91,12 @@
       });
     }
 
-    var OpenWeatherMap_WS_BASE_URL = 'http://api.openweathermap.org/data/2.5/';
+    var CORS_SERVICE_URL_PREFIX = 'https://cors-anywhere.herokuapp.com/';
+
+    var isHttps = location && location.href.toLowerCase().startsWith('https:');
+    var OpenWeatherMap_WS_Prefix = isHttps ? CORS_SERVICE_URL_PREFIX : '';
+
+    var OpenWeatherMap_WS_BASE_URL = OpenWeatherMap_WS_Prefix + 'http://api.openweathermap.org/data/2.5/';
     var OpenWeatherMap_WS_AppId = '6bd9686d6698729a80ce12d387467d60';
 
     var mockCityData = {};
@@ -266,7 +272,9 @@
                 console.log('Mock request: ${BASE_URL}weather?lat=' + lat + '&lon=' + lon + '&appid=${appid}');
                 return new Promise(function (resolve) {
                     setTimeout(function () {
-                        resolve(mockLocationData[0]);
+                        var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
+                        result.setTemperatures();
+                        resolve(result);
                     }, 700);
                 });
             }
@@ -291,39 +299,18 @@
                 }
             }
         }, {
-            key: 'setStargazers',
-            value: function setStargazers(value) {
-                if (value !== +value) {
-                    return;
-                }
-
-                var date = new Date();
-                this.stargazersHistory = this.stargazersHistory || [];
-                if (!this.stargazersHistory.length || this.stargazers_count !== value) {
-                    this.stargazersHistory.push({
-                        date: date,
-                        value: value
-                    });
-                }
-
-                if (this.stargazers_count !== value) {
-                    this.stargazers_count = value;
-                    this.stargazers_count_lastUpdateDate = date;
-                }
-            }
-        }, {
             key: 'updateDetails',
             value: function updateDetails() {
-                var _this = this;
-
                 return WeatherService$1.getRepoDetails(this.owner.login, this.name).then(function (repo) {
-                    _this.setStargazers(repo.stargazers_count);
-                    Object.keys(repo).filter(function (k) {
-                        return typeof repo[k] !== 'function' && k !== 'stargazersHistory' && k !== 'downloadsHistory';
-                    }).forEach(function (k) {
-                        _this[k] = repo[k];
-                    });
-                    return repo;
+                    // this.setStargazers(repo.stargazers_count);
+                    // Object.keys(repo).filter(k =>
+                    //     typeof repo[k] !== 'function' &&
+                    //     k !== 'stargazersHistory' &&
+                    //     k !== 'downloadsHistory'
+                    // ).forEach(k => {
+                    //     this[k] = repo[k];
+                    // });
+                    // return repo;
                 });
             }
         }], [{
@@ -370,6 +357,10 @@
             value: function getLocationWeather(lat, lon) {
                 return fetch(OpenWeatherMap_WS_BASE_URL + 'weather?lat=' + lat + '&lon=' + lon + '&appid=' + OpenWeatherMap_WS_AppId).then(function (response) {
                     return response.json();
+                }).then(function (response) {
+                    var result = Object.assign(new CityWeatherDetails(), response);
+                    result.setTemperatures();
+                    return result;
                 }).catch(function (err) {
                     console.log(err);
                     return Promise.reject(err);
@@ -413,17 +404,17 @@
       }
     };
 
-    var citiesOnLoadPromise = localforage.getItem('data.cities').then(function (cities) {
-      if (!Array.isArray(cities)) {
-        cities = [];
+    var citiesOnLoadPromise = localforage.getItem('data.items').then(function (items) {
+      if (!Array.isArray(items)) {
+        items = [];
       }
 
-      cities = cities.map(function (repo) {
+      items = items.map(function (repo) {
         return Object.assign(new CityWeatherDetails(), repo);
       });
 
-      console.log('LOADED!', cities);
-      return cities;
+      console.log('LOADED!', items);
+      return items;
     }).catch(function () {
       return [];
     });
@@ -437,7 +428,7 @@
 
         if (cities.length) {
           setTimeout(function () {
-            app.route = 'citiesitories';
+            app.route = 'cities';
             app.reloadPage();
           }, 0);
         }

@@ -4,7 +4,7 @@
   'use strict';
 
   Polymer({
-    is: 'cities-page',
+    is: 'my-cities-page',
 
     properties: {
       items: {

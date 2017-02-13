@@ -1,7 +1,7 @@
 <html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 
-</head><body><dom-module id="cities-page">
+</head><body><dom-module id="my-cities-page">
   <template>
     <style include="shared-styles">
       :host {
@@ -85,24 +85,29 @@
       }
     </style>
 
-    <section class="text-right">
+    <!-- <section class="text-right">
       <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
 
-      <iron-dropdown horizontal-align="right" vertical-align="top" opened="{{sortingDropDownOpened}}">
+      <iron-dropdown horizontal-align="right" vertical-align="top" opened={{sortingDropDownOpened}}>
         <paper-material class="dropdown-content no-padding" elevation="1">
-          <paper-listbox attr-for-selected="value" selected="{{ sortingType }}" on-iron-select="sortingOptionSelected">
+          <paper-listbox attr-for-selected="value"
+              selected="{{ sortingType }}"
+              on-iron-select="sortingOptionSelected">
             <template is="dom-repeat" items="[[sortingOptions]]">
               <paper-item value="[[item.value]]">[[item.name]]</paper-item>
             </template>
           </paper-listbox>
         </paper-material>
       </iron-dropdown>
-    </section>
+    </section> -->
+    <template is="dom-if" if="{{!items.length}}">
+      <h5>No locations bookmarked yet...</h5>
+    </template>
     
     <paper-material class="no-padding" elevation="1">
-      <item-list items="{{ items }}" sort="{{ sortingType }}"></item-list>
+      <cities-list items="{{ items }}" sort="{{ sortingType }}"></cities-list>
     </paper-material>
   </template>
 
   </dom-module>
-<script src="cities-page.js"></script></body></html>
+<script src="my-cities-page.js"></script></body></html>

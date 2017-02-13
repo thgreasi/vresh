@@ -60,10 +60,10 @@
       if (!searchTerm && !searchCoords) {
         this.set('searchObject', null);
       }
-      this.set('searchObject', {
-        searchTerm: searchTerm,
-        searchCoords: searchCoords
-      });
+      // this.set('searchObject', {
+      //   searchTerm: searchTerm,
+      //   searchCoords: searchCoords
+      // });
     },
 
     _searchTermUnDebouncedChangedObserver: function _searchTermUnDebouncedChangedObserver(newValue) {
@@ -76,6 +76,10 @@
 
     setSearchTerm: function setSearchTerm() {
       this.set('searchTerm', this.searchTermTmp || '');
+      this.set('searchObject', {
+        searchTerm: this.searchTerm,
+        searchCoords: null
+      });
     },
 
     getGeoLocation: function getGeoLocation() {
@@ -83,6 +87,10 @@
 
       navigator.geolocation.getCurrentPosition(function (position) {
         _this2.set('searchCoords', position.coords);
+        _this2.set('searchObject', {
+          searchTerm: null,
+          searchCoords: _this2.searchCoords
+        });
         // {
         //   "latitude": 38.4636,
         //   "longitude": 23.5994,
@@ -108,6 +116,7 @@
         if (_this3.searchTermTmp === undefined && _this3.searchTerm !== undefined) {
           _this3.$.lastSearchTermStorage.removeEventListener('value-changed', lastValueLoadedFn);
           _this3.set('searchTermTmp', _this3.searchTerm || '');
+          _this3.setSearchTerm();
           _this3.$.searchInput.value = _this3.searchTermTmp;
         }
       };

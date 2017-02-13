@@ -32,8 +32,7 @@
         flex-flow: column;
       }
 
-      .stargazers-cont,
-      .downloads-cont {
+      .info-cont {
         flex: 1;
         display: inline-block;
       }
@@ -48,7 +47,7 @@
         line-height: 0.5;
       }
 
-      .cities-name {
+      .item-name {
         font-size: 1.5em;
         vertical-align: middle;
       }
@@ -63,12 +62,7 @@
         height: 24px;
       }
 
-      [icon="file-download"] {
-        color: var(--paper-blue-a700);
-      }
-
-      .downloads-cont,
-      .stargazers-cont {
+      .info-cont {
         text-align: right;
       }
 
@@ -91,53 +85,22 @@
     <div id="itemsCont" class="itemsCont">
 
       <div class="itemname-cont">
-        <template is="dom-if" if="{{!item.fork}}">
-          <iron-icon icon="app-svg-icons:cities-icon"></iron-icon>
-        </template>
-
-        <template is="dom-if" if="{{item.fork}}">
-          <iron-icon icon="app-svg-icons:cities-forked-icon"></iron-icon>
-        </template>
-
-        <span class="cities-name">{{ item.name }}</span>
+        <iron-icon icon="[[weatherIcon]]"></iron-icon>
+        <span class="city-temperature">{{ item.main.tempc }}</span>
+        <iron-icon icon="weather-icons:wi_celsius"></iron-icon>
+        &nbsp;
+        <span class="item-name">{{ item.name }}</span>
       </div>
 
       <div class="stats-cont">
-        <div class="stargazers-cont">
-          <span class="diff">
-            <template is="dom-if" if="{{ stargazersDiff }}">
-              <span class$="{{ getDiffClass(stargazersDiff) }}">
-                <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
-                {{ normalizeNumberLength(stargazersDiff) }}
-              </span>
-            </template>
-          </span>
-
-          <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
+        <div class="info-cont">
           <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarItemTap"></paper-icon-button>
-        </div>
-
-        <div class="downloads-cont">
-          <template is="dom-if" if="{{ item.downloads }}">
-
-            <span class="diff">
-              <template is="dom-if" if="{{ downloadsDiff }}">
-                <span class$="{{ getDiffClass(downloadsDiff) }}">
-                  <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
-                  {{ normalizeNumberLength(downloadsDiff) }}
-                </span>
-              </template>
-            </span>
-
-            <span>{{ normalizeNumberLength(item.downloads) }}</span>
-            <iron-icon icon="file-download"></iron-icon>
-          </template>
         </div>
       </div>
 
     </div>
 
-    <paper-toast id="unstarToast" duration="3000" text="Itemsitory deleted!">
+    <paper-toast id="unstarToast" duration="3000" text="Location deleted!">
       <paper-button on-tap="undoUnstar" class="yellow-button">Undo</paper-button>
     </paper-toast>
   </template>

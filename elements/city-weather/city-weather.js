@@ -45,17 +45,24 @@
       }
     },
 
-    observers: ['_itemChanged(item, savedItems)'],
+    observers: ['_itemChanged(item, savedItems.*)'],
 
     _itemChanged: function _itemChanged() {
       var _this = this;
 
-      if (this.item && this.savedItems && this.savedItems.length) {
+      if (this.item !== this.savedItem) {
+        this._setSavedItem(null);
+        this._setIsSaved(false);
+      }
 
-        if (!this.savedItem || this.savedItem.full_name !== this.item.full_name || this.savedItems.indexOf(this.savedItem) < 0) {
-          this._setSavedItem(this.savedItems.filter(function (x) {
-            return x.full_name === _this.item.full_name;
-          }).shift());
+      if (this.item && this.savedItems) {
+
+        if (!this.savedItem || this.savedItem.name !== this.item.name || this.savedItems.indexOf(this.savedItem) < 0) {
+
+          var listItem = this.savedItems.filter(function (x) {
+            return x.name === _this.item.name;
+          }).shift();
+          this._setSavedItem(listItem);
         }
       }
       this._setIsSaved(!!this.savedItem);
@@ -72,7 +79,6 @@
     _computeWeatherDescription: function _computeWeatherDescription(item) {
       if (item && item.weather && item.weather[0] && item.weather[0].description) {
         return item.weather[0].description;
-        return 'weather-icons:wi_owm_' + weatherIconID;
       }
     },
 
@@ -81,6 +87,8 @@
         if (this.isSaved) {
           // this.splice('savedItems', this.savedItems.indexOf(this.savedItem), 1);
           this.savedItems.splice(this.savedItems.indexOf(this.savedItem), 1);
+          this._setSavedItem(null);
+          this._setIsSaved(false);
         } else {
           // this.push('savedItems', this.item);
           this.savedItems.push(this.item);
