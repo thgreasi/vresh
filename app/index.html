@@ -167,15 +167,24 @@
     <!-- Uncomment next block to enable Service Worker support (1/2) -->
     
     <paper-toast id="caching-complete"
-                 duration="6000"
+                 duration="0"
                  text="Caching complete! This app will work offline.">
+                 <paper-button onclick="window['caching-complete'].toggle()" class="yellow-button">OK!</paper-button>
+    </paper-toast>
+
+    <paper-toast id="caching-updated"
+                 duration="0"
+                 text="A newer version of the app is available.">
+                 <paper-button onclick="location.reload()" class="yellow-button">Reload Now</paper-button>
+                 <paper-button onclick="window['caching-updated'].toggle()" class="yellow-button">Later</paper-button>
     </paper-toast>
 
     <platinum-sw-register auto-register
                           clients-claim
                           skip-waiting
                           base-uri="bower_components/platinum-sw/bootstrap"
-                          on-service-worker-installed="displayInstalledToast">
+                          on-service-worker-installed="displayInstalledToast"
+                          on-service-worker-updated="displayUpdatedToast">
       <platinum-sw-cache default-cache-strategy="fastest"
                          cache-config-file="cache-config.json">
       </platinum-sw-cache>
