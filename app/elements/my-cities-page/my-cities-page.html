@@ -154,7 +154,14 @@
 
         _itemsChanged(changeRecord) {
           console.log('_itemsChanged', changeRecord);
-          var localforage = document.createElement('iron-meta').byKey('localforage');
+          var ironMeta = document.createElement('iron-meta');
+          var dataItemsLoaded = ironMeta.byKey('dataItemsLoaded');
+          if (!dataItemsLoaded) {
+            // do not save anything until the old data are loaded
+            console.log('_itemsChanged save skipped');
+            return;
+          }
+          var localforage = ironMeta.byKey('localforage');
           localforage.setItem('data.items', this.items).then(() => {
             console.log('Saved', 'data.items', this.items);
           });
@@ -169,25 +176,25 @@
         },
 
         refresh: function() {
-          this.items.map((item) => {
-            return Promise.all([
-              item.updateDetails().then(() => '#${i}.stargazers_count'),
-              item.updateDownloads().then(() => '#${i}.downloads')
-            ].map((p) => p.then((path) => {
-              if (!path) {
-                return;
-              }
-              let i = this.items.indexOf(item);
-              if (i >= 0) {
-                let p = `items.${path.replace('${i}', i)}`;
-                this.notifyPath(p, this.get(p));
-              }
-            }))).catch((e) => { console.error('Error:', e); });
-          });
+          // this.items.map((item) => {
+          //   return Promise.all([
+          //     item.updateDetails().then(() => '#${i}.stargazers_count'),
+          //     item.updateDownloads().then(() => '#${i}.downloads')
+          //   ].map((p) => p.then((path) => {
+          //     if (!path) {
+          //       return;
+          //     }
+          //     let i = this.items.indexOf(item);
+          //     if (i >= 0) {
+          //       let p = `items.${path.replace('${i}', i)}`;
+          //       this.notifyPath(p, this.get(p));
+          //     }
+          //   }))).catch((e) => { console.error('Error:', e); });
+          // });
         },
 
         ready: function() {
-
+          
         }
       });
     })();

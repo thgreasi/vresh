@@ -3,7 +3,7 @@ import localforage from 'localforage';
 import { app, loadedPromise } from './appCore';
 import { init as appThemeInit } from './appTheme';
 
-import { WeatherService } from './Services/WeatherService';
+import { WeatherService } from './Services/WeatherServiceMock';
 import CityWeatherDetails from './Model/CityWeatherDetails';
 
 
@@ -42,6 +42,7 @@ app.reloadPage = function() {
   }
 };
 
+app.dataItemsLoaded = false;
 var citiesOnLoadPromise = localforage.getItem('data.items').then(items => {
     if (!Array.isArray(items)) {
       items = [];
@@ -57,10 +58,11 @@ loadedPromise.then(() => {
   console.log('loadedPromise');
   return citiesOnLoadPromise.then(cities => {
     // app.$.datacitiesStorage.set('autoSaveDisabled', false);
-    app.set('cities', cities);
-    console.log('SET cities', cities);
+    app.set('dataItemsLoaded', true);
+    app.set('cities', cities || []);
+    console.log('LOADED & SET cities', cities);
 
-    if (cities.length) {
+    if (cities && cities.length) {
       setTimeout(() => {
         app.route = 'cities';
         app.reloadPage();
@@ -71,38 +73,3 @@ loadedPromise.then(() => {
   // return getUserAndOrgcities('thgreasi');
 
 });
-
-function getUserAndOrgcities(username) {
-  var usercitiesPromise = GithubService.getUsercities(username);
-  var orgsPromise = GithubService.getUserOrgs(username);
-
-  var overallPromises = [processRepoInfosPromise(usercitiesPromise)];
-
-  overallPromises.push(orgsPromise.then(orgs => {
-    return Promise.all(orgs.map(o => processRepoInfosPromise(GithubService.getUsercities(o.login))));
-  }));
-
-  return Promise.all([overallPromises]);
-}
-
-
-function processRepoInfos (cities) {
-  cities.forEach((repo) => {
-    repo.setStargazers(repo.stargazers_count);
-    repo.setDownloads(repo.downloads);
-  });
-  
-  if (cities.length) {
-    app.cities.push.apply(app.cities, cities);
-    app.set('cities', app.cities.slice());
-  }
-
-  // let args = cities.slice();
-  // args.unshift('app.cities');
-  // console.log(args);
-  // app.push.apply(app, args);
-}
-
-function processRepoInfosPromise (citiesPromise) {
-  return citiesPromise.then(cities => processRepoInfos(cities));
-}
