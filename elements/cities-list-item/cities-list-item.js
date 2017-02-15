@@ -44,6 +44,11 @@
       var _this = this;
 
       this.$.unstarToast.show();
+      // this.$.unstarToast.undoInitialHeight = this.getBoundingClientRect().height;
+      // this.style.height = this.$.unstarToast.undoInitialHeight + 'px';
+      // this.style.height = this.style.height;// force a redraw
+      // this.style.height = '0px';
+      this.$.collapse.hide();
       this.$.unstarToast.undoTimeout = setTimeout(function () {
         _this.$.unstarToast.undoTimeout = null;
         // this.$.itemsCont
@@ -52,9 +57,18 @@
     },
 
     undoUnstar: function undoUnstar() {
+      var _this2 = this;
+
       if (this.$.unstarToast.undoTimeout) {
         clearTimeout(this.$.unstarToast.undoTimeout);
+        this.$.unstarToast.hide();
         this.$.unstarToast.undoTimeout = null;
+        // this.style.height = this.$.unstarToast.undoInitialHeight;
+        // this.style.height = this.style.height;// force a redraw
+        setTimeout(function () {
+          // this.style.height = '';
+          _this2.$.collapse.show();
+        }, 500);
       }
     },
 

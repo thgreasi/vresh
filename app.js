@@ -389,6 +389,13 @@
       }
     };
 
+    app.displayUpdatedToast = function () {
+      // Check to make sure caching is actually enabled—it won't be in the dev environment.
+      if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
+        Polymer.dom(document).querySelector('#caching-updated').show();
+      }
+    };
+
     // Scroll page to top and expand header
     app.scrollPageToTop = function () {
       app.$.headerPanelMain.scrollToTop(true);
@@ -404,6 +411,7 @@
       }
     };
 
+    app.dataItemsLoaded = false;
     var citiesOnLoadPromise = localforage.getItem('data.items').then(function (items) {
       if (!Array.isArray(items)) {
         items = [];
@@ -423,10 +431,11 @@
       console.log('loadedPromise');
       return citiesOnLoadPromise.then(function (cities) {
         // app.$.datacitiesStorage.set('autoSaveDisabled', false);
-        app.set('cities', cities);
-        console.log('SET cities', cities);
+        app.set('dataItemsLoaded', true);
+        app.set('cities', cities || []);
+        console.log('LOADED & SET cities', cities);
 
-        if (cities.length) {
+        if (cities && cities.length) {
           setTimeout(function () {
             app.route = 'cities';
             app.reloadPage();
