@@ -6,10 +6,13 @@
   <template>
     <style>
       :host {
+        display: block;
         /*display: flex;
         line-height: 1em;
         flex-flow: row;
         align-items: center;*/
+        transition: all ease 0.3s;
+        overflow: hidden;
       }
 
       .itemsCont {
@@ -82,23 +85,25 @@
 
     </style>
 
-    <div id="itemsCont" class="itemsCont">
+    <iron-collapse id="collapse" opened>
+      <div id="itemsCont" class="itemsCont">
 
-      <div class="itemname-cont">
-        <iron-icon icon="[[weatherIcon]]"></iron-icon>
-        <span class="city-temperature">{{ item.main.tempc }}</span>
-        <iron-icon icon="weather-icons:wi_celsius"></iron-icon>
-        &nbsp;
-        <span class="item-name">{{ item.name }}</span>
-      </div>
-
-      <div class="stats-cont">
-        <div class="info-cont">
-          <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarItemTap"></paper-icon-button>
+        <div class="itemname-cont">
+          <iron-icon icon="[[weatherIcon]]"></iron-icon>
+          <span class="city-temperature">{{ item.main.tempc }}</span>
+          <iron-icon icon="weather-icons:wi_celsius"></iron-icon>
+          &nbsp;
+          <span class="item-name">{{ item.name }}</span>
         </div>
-      </div>
 
-    </div>
+        <div class="stats-cont">
+          <div class="info-cont">
+            <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarItemTap"></paper-icon-button>
+          </div>
+        </div>
+
+      </div>
+    </iron-collapse>
 
     <paper-toast id="unstarToast" duration="3000" text="Location deleted!">
       <paper-button on-tap="undoUnstar" class="yellow-button">Undo</paper-button>
@@ -153,6 +158,11 @@
 
         unstarItemTap: function () {
           this.$.unstarToast.show();
+          // this.$.unstarToast.undoInitialHeight = this.getBoundingClientRect().height;
+          // this.style.height = this.$.unstarToast.undoInitialHeight + 'px';
+          // this.style.height = this.style.height;// force a redraw
+          // this.style.height = '0px';
+          this.$.collapse.hide();
           this.$.unstarToast.undoTimeout = setTimeout(() => {
             this.$.unstarToast.undoTimeout = null;
             // this.$.itemsCont
@@ -163,7 +173,14 @@
         undoUnstar: function () {
           if (this.$.unstarToast.undoTimeout) {
             clearTimeout(this.$.unstarToast.undoTimeout);
+            this.$.unstarToast.hide();
             this.$.unstarToast.undoTimeout = null;
+            // this.style.height = this.$.unstarToast.undoInitialHeight;
+            // this.style.height = this.style.height;// force a redraw
+            setTimeout(() => {
+              // this.style.height = '';
+              this.$.collapse.show();
+            }, 500);
           }
         },
 
