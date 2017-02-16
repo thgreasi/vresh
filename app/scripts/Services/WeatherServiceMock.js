@@ -11,6 +11,23 @@ export class WeatherService {
         return new Promise(resolve => {
             setTimeout(() => {
                 var result = Object.assign(new CityWeatherDetails(), mockCityData[cityname]);
+                if (result.main) {
+                    result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                }
+                result.setTemperatures();
+                resolve(result);
+            }, 700);
+        });
+    }
+
+    static getCityWeatherByID (cityID) {
+        console.log(`Mock request: \${BASE_URL}weather?id=${cityID}&appid=\${appid}`);
+        return new Promise(resolve => {
+            setTimeout(() => {
+                var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
+                if (result.main) {
+                    result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                }
                 result.setTemperatures();
                 resolve(result);
             }, 700);
@@ -23,6 +40,9 @@ export class WeatherService {
         return new Promise(resolve => {
             setTimeout(() => {
                 var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
+                if (result.main) {
+                    result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                }
                 result.setTemperatures();
                 resolve(result);
             }, 700);
