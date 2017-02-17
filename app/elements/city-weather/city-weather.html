@@ -255,11 +255,11 @@
               this.savedItems) {
 
             if (!this.savedItem ||
-                this.savedItem.name !== this.item.name ||
+                this.savedItem.id !== this.item.id ||
                 this.savedItems.indexOf(this.savedItem) < 0) {
               
               var listItem = this.savedItems
-                  .filter(x => x.name === this.item.name)
+                  .filter(x => x.id === this.item.id)
                   .shift();
               this._setSavedItem(listItem);
             }
