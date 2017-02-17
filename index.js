@@ -1,3 +1,3 @@
 'use strict';
 
-'https:' !== window.location.protocol && (window.location.protocol = 'https');
+'localhost' !== window.location.hostname && 'https:' !== window.location.protocol && (window.location.protocol = 'https');

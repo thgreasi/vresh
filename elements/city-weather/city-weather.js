@@ -57,10 +57,10 @@
 
       if (this.item && this.savedItems) {
 
-        if (!this.savedItem || this.savedItem.name !== this.item.name || this.savedItems.indexOf(this.savedItem) < 0) {
+        if (!this.savedItem || this.savedItem.id !== this.item.id || this.savedItems.indexOf(this.savedItem) < 0) {
 
           var listItem = this.savedItems.filter(function (x) {
-            return x.name === _this.item.name;
+            return x.id === _this.item.id;
           }).shift();
           this._setSavedItem(listItem);
         }

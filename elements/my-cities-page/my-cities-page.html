@@ -13,17 +13,6 @@
         @apply(--paper-font-body2);
       }
 
-      ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-
-      header {
-        color: #6F6F6F;
-        margin-bottom: 0;
-      }
-
       paper-spinner {
         vertical-align: middle;
       }
@@ -36,8 +25,20 @@
       .text-right {
         text-align: right;
       }
+
+      .page-title {
+        display: inline-block;
+        vertical-align: middle;
+      }
     </style>
 
+    <header>
+      <h1 class="page-title" tabindex="-1">My Locations</h1>
+      <template is="dom-if" if="{{ activeCityWeatherPromise }}">
+        <paper-spinner active=""></paper-spinner>
+      </template>
+    </header>
+    
     <!-- <section class="text-right">
       <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
 
@@ -53,12 +54,14 @@
         </paper-material>
       </iron-dropdown>
     </section> -->
+
+
     <template is="dom-if" if="{{!items.length}}">
       <h5>No locations bookmarked yet...</h5>
     </template>
     
     <paper-material class="no-padding" elevation="1">
-      <cities-list items="{{ items }}" sort="{{ sortingType }}"></cities-list>
+      <cities-list id="citieslist" items="{{ items }}" sort="{{ sortingType }}"></cities-list>
     </paper-material>
   </template>
 

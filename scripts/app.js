@@ -258,6 +258,26 @@
                 return new Promise(function (resolve) {
                     setTimeout(function () {
                         var result = Object.assign(new CityWeatherDetails(), mockCityData[cityname]);
+                        if (result.main) {
+                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                        }
+                        result.setTemperatures();
+                        resolve(result);
+                    }, 700);
+                });
+            }
+        }, {
+            key: 'getCityWeatherByID',
+            value: function getCityWeatherByID(cityID) {
+                console.log('Mock request: ${BASE_URL}weather?id=' + cityID + '&appid=${appid}');
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData).filter(function (k) {
+                            return mockCityData[k].id === cityID;
+                        }).shift()]);
+                        if (result.main) {
+                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                        }
                         result.setTemperatures();
                         resolve(result);
                     }, 700);
@@ -273,6 +293,9 @@
                 return new Promise(function (resolve) {
                     setTimeout(function () {
                         var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
+                        if (result.main) {
+                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
+                        }
                         result.setTemperatures();
                         resolve(result);
                     }, 700);
@@ -339,6 +362,20 @@
             // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
             value: function getCityWeather(cityname) {
                 return fetch(OpenWeatherMap_WS_BASE_URL + 'weather?q=' + cityname + '&appid=' + OpenWeatherMap_WS_AppId).then(function (response) {
+                    return response.json();
+                }).then(function (response) {
+                    var result = Object.assign(new CityWeatherDetails(), response);
+                    result.setTemperatures();
+                    return result;
+                }).catch(function (err) {
+                    console.log(err);
+                    return Promise.reject(err);
+                });
+            }
+        }, {
+            key: 'getCityWeatherByID',
+            value: function getCityWeatherByID(cityID) {
+                return fetch(OpenWeatherMap_WS_BASE_URL + 'weather?id=' + cityID + '&appid=' + OpenWeatherMap_WS_AppId).then(function (response) {
                     return response.json();
                 }).then(function (response) {
                     var result = Object.assign(new CityWeatherDetails(), response);

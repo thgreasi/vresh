@@ -28,6 +28,14 @@
       sortingDropDownOpened: {
         type: Boolean,
         notify: true
+      },
+      activeCityWeatherPromise: {
+        type: Object,
+        default: function _default(f) {
+          return null;
+        },
+        notify: true,
+        readOnly: true
       }
     },
 
@@ -66,21 +74,14 @@
     },
 
     refresh: function refresh() {
-      // this.items.map((item) => {
-      //   return Promise.all([
-      //     item.updateDetails().then(() => '#${i}.stargazers_count'),
-      //     item.updateDownloads().then(() => '#${i}.downloads')
-      //   ].map((p) => p.then((path) => {
-      //     if (!path) {
-      //       return;
-      //     }
-      //     let i = this.items.indexOf(item);
-      //     if (i >= 0) {
-      //       let p = `items.${path.replace('${i}', i)}`;
-      //       this.notifyPath(p, this.get(p));
-      //     }
-      //   }))).catch((e) => { console.error('Error:', e); });
-      // });
+      var _this2 = this;
+
+      var promise = this.$.citieslist.refresh();
+      this._setActiveCityWeatherPromise(promise);
+      promise.catch(function () {}).then(function () {
+        _this2._setActiveCityWeatherPromise(null);
+      });
+      return promise;
     },
 
     ready: function ready() {}

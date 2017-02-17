@@ -28,44 +28,28 @@
     refresh: function refresh() {
       var _this = this;
 
-      return this.items.map(function (cities) {
-        return Promise.all([cities.updateDetails().then(function () {
-          return '#${i}.stargazers_count';
-        }), cities.updateDownloads().then(function () {
-          return '#${i}.downloads';
-        })].map(function (p) {
-          return p.then(function (path) {
-            var i = _this.items.indexOf(cities);
-            if (i >= 0) {
-              var _p = 'items.' + path.replace('${i}', i);
-              _this.notifyPath(_p, _this.get(_p));
-            }
-            // this._itemsOrSortingChanged(this.items, this.sort);
-            // i = this.sortedItems.indexOf(cities);
-            // if (i >= 0) {
-            //   let p = `sortedItems.${path.replace('${i}', i)}`;
-            //   this.notifyPath(p, this.get(p));
-            // }
-            // return path;
-          });
-        })).catch(function (e) {
-          console.error('Error:', e);
+      console.log('refresh', this.items);
+      if (!this.items) {
+        return Promise.resolve();
+      }
+      var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+      return Promise.all(this.items.map(function (c) {
+        console.log('refreshing ' + c.name);
+        return searchProvider.getCityWeatherByID(c.id).then(function (data) {
+          var index = _this.items.indexOf(c);
+          if (index >= 0) {
+            _this.splice('items', index, 1, data);
+            // Object.assign(c, data);
+            // this.notifyPath(`items.#${index}`, data);
+          }
+          return data;
+        }).catch(function (e) {
+          console.log('Error: ' + e);
+          return c;
         });
-      }).then(function (itemsWithPaths) {
-        console.log(itemsWithPaths);
-        // this._itemsOrSortingChanged(this.items, this.sort);
-        // itemsWithPaths.forEach(itemPaths => {
-        //   itemPaths.forEach(path => {
-        //     let i = this.sortedItems.indexOf(cities);
-        //     if (i >= 0) {
-        //       let p = `sortedItems.${path.replace('${i}', i)}`;
-        //       this.notifyPath(p, this.get(p));
-        //     }
-        //     return path;
-        //   });
-        // });
-
-        // return itemsWithPaths;
+      })).catch(function (e) {
+        console.log('Error: ' + e);
+        return _this.items;
       });
     },
 
