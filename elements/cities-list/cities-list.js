@@ -32,18 +32,37 @@
       if (!this.items) {
         return Promise.resolve();
       }
+
       var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
       return Promise.all(this.items.map(function (c) {
+        if (!c || !c.id) {
+          return;
+        }
         console.log('refreshing ' + c.name);
-        return searchProvider.getCityWeatherByID(c.id).then(function (data) {
+
+        var updatePromise = searchProvider.getCityWeatherByID(c.id).then(function (data) {
+          if (!data || !data.id) {
+            return;
+          }
           var index = _this.items.indexOf(c);
           if (index >= 0) {
             _this.splice('items', index, 1, data);
-            // Object.assign(c, data);
-            // this.notifyPath(`items.#${index}`, data);
           }
           return data;
         }).catch(function (e) {
+          console.log('Error: ' + e);
+          return c;
+        });
+
+        // var updatePromise =  c.updateDetails((subPath, value) => {
+        //   let index = this.items.indexOf(c);
+        //   if (index >= 0) {
+        //     console.log(`Updating items.#${index}${subPath}: ${value}`);
+        //     this.set(`items.#${index}${subPath}`, value);
+        //   }
+        // });
+
+        return updatePromise.catch(function (e) {
           console.log('Error: ' + e);
           return c;
         });
@@ -100,16 +119,6 @@
       }
     },
 
-    ready: function ready() {
-
-      // this.items = [
-      //   'Responsive Web App boilerplate',
-      //   'Iron Elements and Paper Elements',
-      //   'End-to-end Build Tooling (including Vulcanize)',
-      //   'Unit testing with Web Component Tester',
-      //   'Routing with Page.js',
-      //   'Offline support with the Platinum Service Worker Elements'
-      // ];
-    }
+    ready: function ready() {}
   });
 })();

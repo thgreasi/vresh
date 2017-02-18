@@ -99,217 +99,9 @@
     var OpenWeatherMap_WS_BASE_URL = OpenWeatherMap_WS_Prefix + 'http://api.openweathermap.org/data/2.5/';
     var OpenWeatherMap_WS_AppId = '6bd9686d6698729a80ce12d387467d60';
 
-    var mockCityData = {};
-    mockCityData['London'] = {
-      "coord": {
-        "lon": -0.13,
-        "lat": 51.51
-      },
-      "weather": [{
-        "id": 300,
-        "main": "Drizzle",
-        "description": "light intensity drizzle",
-        "icon": "09d"
-      }],
-      "base": "stations",
-      "main": {
-        "temp": 280.32,
-        "pressure": 1012,
-        "humidity": 81,
-        "temp_min": 279.15,
-        "temp_max": 281.15
-      },
-      "visibility": 10000,
-      "wind": {
-        "speed": 4.1,
-        "deg": 80
-      },
-      "clouds": {
-        "all": 90
-      },
-      "dt": 1485789600,
-      "sys": {
-        "type": 1,
-        "id": 5091,
-        "message": 0.0103,
-        "country": "GB",
-        "sunrise": 1485762037,
-        "sunset": 1485794875
-      },
-      "id": 2643743,
-      "name": "London",
-      "cod": 200
-    };
-
-    mockCityData['London2'] = {
-      "coord": {
-        "lon": -0.13,
-        "lat": 51.51
-      },
-      "weather": [{
-        "id": 721,
-        "main": "Haze",
-        "description": "haze",
-        "icon": "50d"
-      }, {
-        "id": 520,
-        "main": "Rain",
-        "description": "light intensity shower rain",
-        "icon": "09d"
-      }, {
-        "id": 310,
-        "main": "Drizzle",
-        "description": "light intensity drizzle rain",
-        "icon": "09d"
-      }, {
-        "id": 701,
-        "main": "Mist",
-        "description": "mist",
-        "icon": "50d"
-      }, {
-        "id": 600,
-        "main": "Snow",
-        "description": "light snow",
-        "icon": "13d"
-      }],
-      "base": "stations",
-      "main": {
-        "temp": 274.56,
-        "pressure": 1023,
-        "humidity": 93,
-        "temp_min": 273.15,
-        "temp_max": 275.15
-      },
-      "visibility": 4600,
-      "wind": {
-        "speed": 4.6,
-        "deg": 30
-      },
-      "clouds": {
-        "all": 90
-      },
-      "dt": 1486893000,
-      "sys": {
-        "type": 1,
-        "id": 5091,
-        "message": 0.0114,
-        "country": "GB",
-        "sunrise": 1486883941,
-        "sunset": 1486919473
-      },
-      "id": 2643743,
-      "name": "London",
-      "cod": 200
-    };
-
-    var mockLocationData = [];
-    mockLocationData.push({
-      "coord": {
-        "lon": 139.01,
-        "lat": 35.02
-      },
-      "weather": [{
-        "id": 800,
-        "main": "Clear",
-        "description": "clear sky",
-        "icon": "01n"
-      }],
-      "base": "stations",
-      "main": {
-        "temp": 285.514,
-        "pressure": 1013.75,
-        "humidity": 100,
-        "temp_min": 285.514,
-        "temp_max": 285.514,
-        "sea_level": 1023.22,
-        "grnd_level": 1013.75
-      },
-      "wind": {
-        "speed": 5.52,
-        "deg": 311
-      },
-      "clouds": {
-        "all": 0
-      },
-      "dt": 1485792967,
-      "sys": {
-        "message": 0.0025,
-        "country": "JP",
-        "sunrise": 1485726240,
-        "sunset": 1485763863
-      },
-      "id": 1907296,
-      "name": "Tawarano",
-      "cod": 200
-    });
-
-    var WeatherService$1 = function () {
-        function WeatherService() {
-            babelHelpers.classCallCheck(this, WeatherService);
-        }
-
-        babelHelpers.createClass(WeatherService, null, [{
-            key: 'getCityWeather',
-
-
-            // http://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1
-            value: function getCityWeather(cityname) {
-                console.log('Mock request: ${BASE_URL}weather?q=' + cityname + '&appid=${appid}');
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        var result = Object.assign(new CityWeatherDetails(), mockCityData[cityname]);
-                        if (result.main) {
-                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
-                        }
-                        result.setTemperatures();
-                        resolve(result);
-                    }, 700);
-                });
-            }
-        }, {
-            key: 'getCityWeatherByID',
-            value: function getCityWeatherByID(cityID) {
-                console.log('Mock request: ${BASE_URL}weather?id=' + cityID + '&appid=${appid}');
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData).filter(function (k) {
-                            return mockCityData[k].id === cityID;
-                        }).shift()]);
-                        if (result.main) {
-                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
-                        }
-                        result.setTemperatures();
-                        resolve(result);
-                    }, 700);
-                });
-            }
-
-            // http://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b1b15e88fa797225412429c1c50c122a1
-
-        }, {
-            key: 'getLocationWeather',
-            value: function getLocationWeather(lat, lon) {
-                console.log('Mock request: ${BASE_URL}weather?lat=' + lat + '&lon=' + lon + '&appid=${appid}');
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        var result = Object.assign(new CityWeatherDetails(), mockCityData[Object.keys(mockCityData)[0]]);
-                        if (result.main) {
-                            result.main.temp += (Math.random() >= 0.5 ? 1 : -1) * Math.round(Math.random() * 5);
-                        }
-                        result.setTemperatures();
-                        resolve(result);
-                    }, 700);
-                });
-            }
-        }]);
-        return WeatherService;
-    }();
-
     var CityWeatherDetails = function () {
         function CityWeatherDetails() {
             babelHelpers.classCallCheck(this, CityWeatherDetails);
-
-            this.stargazersHistory = this.stargazersHistory || [];
         }
 
         babelHelpers.createClass(CityWeatherDetails, [{
@@ -323,17 +115,27 @@
             }
         }, {
             key: 'updateDetails',
-            value: function updateDetails() {
-                return WeatherService$1.getRepoDetails(this.owner.login, this.name).then(function (repo) {
-                    // this.setStargazers(repo.stargazers_count);
-                    // Object.keys(repo).filter(k =>
-                    //     typeof repo[k] !== 'function' &&
-                    //     k !== 'stargazersHistory' &&
-                    //     k !== 'downloadsHistory'
-                    // ).forEach(k => {
-                    //     this[k] = repo[k];
-                    // });
-                    // return repo;
+            value: function updateDetails(setPathFn) {
+                var _this = this;
+
+                var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+                return searchProvider.getCityWeatherByID(this.id).then(function (data) {
+                    console.log('asdf', data);
+                    if (!data || !data.id) {
+                        return;
+                    }
+                    Object.keys(data).forEach(function (key) {
+                        var newProp = data[key];
+                        if (_this[key] !== newProp) {
+                            // this.set(`items.#${index}.${key}`, newProp);
+                            if (typeof setPathFn === 'function') {
+                                setPathFn('.' + key, newProp);
+                            } else {
+                                _this[key] = newProp;
+                            }
+                        }
+                    });
+                    return data;
                 });
             }
         }], [{
@@ -474,7 +276,7 @@
 
         if (cities && cities.length) {
           setTimeout(function () {
-            app.route = 'cities';
+            app.page.show('/cities');
             app.reloadPage();
           }, 0);
         }

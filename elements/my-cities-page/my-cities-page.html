@@ -30,6 +30,12 @@
         display: inline-block;
         vertical-align: middle;
       }
+
+      footer {
+        @apply(--paper-font-caption);
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
     </style>
 
     <header>
@@ -63,6 +69,13 @@
     <paper-material class="no-padding" elevation="1">
       <cities-list id="citieslist" items="{{ items }}" sort="{{ sortingType }}"></cities-list>
     </paper-material>
+
+    <template is="dom-if" if="{{updateDate}}">
+      <footer class="paper-material-sizer">
+        Last updated at
+        <time datetime="{{ updateDateISO }}">{{ updateDateLocal }}</time>
+      </footer>
+    </template>
   </template>
 
   </dom-module>

@@ -25698,6 +25698,8 @@ window.addEventListener('WebComponentsReady', function () {
   page({
     hashbang: true
   });
+
+  app.page = page;
 });</script><style is="custom-style">
   /* Application theme */
 
@@ -28222,15 +28224,14 @@ window.addEventListener('WebComponentsReady', function () {
         if (_this.activeCityWeatherPromise === promise) {
           if (data && data.name) {
             _this._setCityWeather(data);
-            var savedItem = _this.savedItems.filter(function (x) {
-              return x.id === data.id;
-            }).shift();
-            if (savedItem) {
-              var index = _this.savedItems.indexOf(savedItem);
-              _this.splice('savedItems', index, 1, data);
-              // Object.assign(savedItem, data);
-              // this.notifyPath(`savedItems.#${index}`, data);
-            }
+            // let savedItem = this.savedItems.filter(x => x.id === data.id).shift();
+            // if (savedItem) {
+            //   let index = this.savedItems.indexOf(savedItem);
+            //   this.splice('savedItems', index, 1, data);
+
+            //   // Object.assign(savedItem, data);
+            //   // this.notifyPath(`savedItems.#${index}`, data);
+            // }
           } else {
               _this._setCityWeather(null);
             }
@@ -28600,6 +28601,12 @@ window.addEventListener('WebComponentsReady', function () {
         display: inline-block;
         vertical-align: middle;
       }
+
+      footer {
+        @apply(--paper-font-caption);
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
     </style>
 
     <header>
@@ -28619,6 +28626,13 @@ window.addEventListener('WebComponentsReady', function () {
     <paper-material class="no-padding" elevation="1">
       <cities-list id="citieslist" items="{{ items }}" sort="{{ sortingType }}"></cities-list>
     </paper-material>
+
+    <template is="dom-if" if="{{updateDate}}">
+      <footer class="paper-material-sizer">
+        Last updated at
+        <time datetime="{{ updateDateISO }}">{{ updateDateLocal }}</time>
+      </footer>
+    </template>
   </template>
 
   </dom-module>
@@ -28660,6 +28674,24 @@ window.addEventListener('WebComponentsReady', function () {
         },
         notify: true,
         readOnly: true
+      },
+      updateDate: {
+        type: Date,
+        default: function _default() {
+          return null;
+        },
+        notify: true,
+        readOnly: true
+      },
+      updateDateLocal: {
+        type: String,
+        notify: true,
+        computed: '_computeUpdateDateLocal(updateDate)'
+      },
+      updateDateISO: {
+        type: String,
+        notify: true,
+        computed: '_computeUpdateDateISO(updateDate)'
       }
     },
 
@@ -28705,10 +28737,43 @@ window.addEventListener('WebComponentsReady', function () {
       promise.catch(function () {}).then(function () {
         _this2._setActiveCityWeatherPromise(null);
       });
+      promise.then(function (results) {
+        if ((results || []).filter(function (x) {
+          return !!x;
+        }).length) {
+          var d = new Date();
+          _this2._setUpdateDate(d);
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.setItem('data.items.updateDate', d);
+        }
+      });
       return promise;
     },
 
-    ready: function ready() {}
+    _computeUpdateDateLocal: function _computeUpdateDateLocal(updateDate) {
+      if (!updateDate) {
+        return '';
+      }
+      return updateDate.toLocaleFormat();
+    },
+
+    _computeUpdateDateISO: function _computeUpdateDateISO(updateDate) {
+      if (!updateDate) {
+        return '';
+      }
+      return updateDate.toISOString();
+    },
+
+    ready: function ready() {
+      var _this3 = this;
+
+      var localforage = document.createElement('iron-meta').byKey('localforage');
+      localforage.getItem('data.items.updateDate').then(function (d) {
+        if (d && !_this3.updateDate) {
+          _this3._setUpdateDate(d);
+        }
+      });
+    }
   });
 })();</script><dom-module id="cities-list" assetpath="cities-list/">
   <template>
@@ -28738,7 +28803,7 @@ window.addEventListener('WebComponentsReady', function () {
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{items}}" sort="_sortItems">
+      <template is="dom-repeat" items="{{items}}">
         <li>
           <cities-list-item item="{{item}}" items="{{items}}" on-unstar="unstarItem"></cities-list-item>
         </li>
@@ -28781,18 +28846,37 @@ window.addEventListener('WebComponentsReady', function () {
       if (!this.items) {
         return Promise.resolve();
       }
+
       var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
       return Promise.all(this.items.map(function (c) {
+        if (!c || !c.id) {
+          return;
+        }
         console.log('refreshing ' + c.name);
-        return searchProvider.getCityWeatherByID(c.id).then(function (data) {
+
+        var updatePromise = searchProvider.getCityWeatherByID(c.id).then(function (data) {
+          if (!data || !data.id) {
+            return;
+          }
           var index = _this.items.indexOf(c);
           if (index >= 0) {
             _this.splice('items', index, 1, data);
-            // Object.assign(c, data);
-            // this.notifyPath(`items.#${index}`, data);
           }
           return data;
         }).catch(function (e) {
+          console.log('Error: ' + e);
+          return c;
+        });
+
+        // var updatePromise =  c.updateDetails((subPath, value) => {
+        //   let index = this.items.indexOf(c);
+        //   if (index >= 0) {
+        //     console.log(`Updating items.#${index}${subPath}: ${value}`);
+        //     this.set(`items.#${index}${subPath}`, value);
+        //   }
+        // });
+
+        return updatePromise.catch(function (e) {
           console.log('Error: ' + e);
           return c;
         });
@@ -28849,17 +28933,7 @@ window.addEventListener('WebComponentsReady', function () {
       }
     },
 
-    ready: function ready() {
-
-      // this.items = [
-      //   'Responsive Web App boilerplate',
-      //   'Iron Elements and Paper Elements',
-      //   'End-to-end Build Tooling (including Vulcanize)',
-      //   'Unit testing with Web Component Tester',
-      //   'Routing with Page.js',
-      //   'Offline support with the Platinum Service Worker Elements'
-      // ];
-    }
+    ready: function ready() {}
   });
 })();</script><dom-module id="cities-list-item" assetpath="cities-list-item/">
   <template>

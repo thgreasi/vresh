@@ -100,15 +100,14 @@
         if (_this.activeCityWeatherPromise === promise) {
           if (data && data.name) {
             _this._setCityWeather(data);
-            var savedItem = _this.savedItems.filter(function (x) {
-              return x.id === data.id;
-            }).shift();
-            if (savedItem) {
-              var index = _this.savedItems.indexOf(savedItem);
-              _this.splice('savedItems', index, 1, data);
-              // Object.assign(savedItem, data);
-              // this.notifyPath(`savedItems.#${index}`, data);
-            }
+            // let savedItem = this.savedItems.filter(x => x.id === data.id).shift();
+            // if (savedItem) {
+            //   let index = this.savedItems.indexOf(savedItem);
+            //   this.splice('savedItems', index, 1, data);
+
+            //   // Object.assign(savedItem, data);
+            //   // this.notifyPath(`savedItems.#${index}`, data);
+            // }
           } else {
               _this._setCityWeather(null);
             }

@@ -36,6 +36,24 @@
         },
         notify: true,
         readOnly: true
+      },
+      updateDate: {
+        type: Date,
+        default: function _default() {
+          return null;
+        },
+        notify: true,
+        readOnly: true
+      },
+      updateDateLocal: {
+        type: String,
+        notify: true,
+        computed: '_computeUpdateDateLocal(updateDate)'
+      },
+      updateDateISO: {
+        type: String,
+        notify: true,
+        computed: '_computeUpdateDateISO(updateDate)'
       }
     },
 
@@ -81,9 +99,42 @@
       promise.catch(function () {}).then(function () {
         _this2._setActiveCityWeatherPromise(null);
       });
+      promise.then(function (results) {
+        if ((results || []).filter(function (x) {
+          return !!x;
+        }).length) {
+          var d = new Date();
+          _this2._setUpdateDate(d);
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.setItem('data.items.updateDate', d);
+        }
+      });
       return promise;
     },
 
-    ready: function ready() {}
+    _computeUpdateDateLocal: function _computeUpdateDateLocal(updateDate) {
+      if (!updateDate) {
+        return '';
+      }
+      return updateDate.toLocaleFormat();
+    },
+
+    _computeUpdateDateISO: function _computeUpdateDateISO(updateDate) {
+      if (!updateDate) {
+        return '';
+      }
+      return updateDate.toISOString();
+    },
+
+    ready: function ready() {
+      var _this3 = this;
+
+      var localforage = document.createElement('iron-meta').byKey('localforage');
+      localforage.getItem('data.items.updateDate').then(function (d) {
+        if (d && !_this3.updateDate) {
+          _this3._setUpdateDate(d);
+        }
+      });
+    }
   });
 })();

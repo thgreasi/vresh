@@ -80,4 +80,6 @@ window.addEventListener('WebComponentsReady', function () {
   page({
     hashbang: true
   });
+
+  app.page = page;
 });
