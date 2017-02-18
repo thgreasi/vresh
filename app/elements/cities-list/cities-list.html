@@ -29,7 +29,7 @@
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{items}}" sort="_sortItems">
+      <template is="dom-repeat" items="{{items}}">
         <li>
           <cities-list-item item={{item}} items={{items}} on-unstar="unstarItem"></cities-list-item>
         </li>
@@ -71,16 +71,34 @@
 
           var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
           return Promise.all(this.items.map(c => {
+            if (!c || !c.id) {
+              return;
+            }
             console.log(`refreshing ${c.name}`);
-            return searchProvider.getCityWeatherByID(c.id).then(data => {
+
+            var updatePromise = searchProvider.getCityWeatherByID(c.id).then(data => {
+              if (!data || !data.id) {
+                return;
+              }
               let index = this.items.indexOf(c);
               if (index >= 0) {
                 this.splice('items', index, 1, data);
-                // Object.assign(c, data);
-                // this.notifyPath(`items.#${index}`, data);
               }
               return data;
             }).catch(e => {
+              console.log(`Error: ${e}`);
+              return c;
+            });
+
+            // var updatePromise =  c.updateDetails((subPath, value) => {
+            //   let index = this.items.indexOf(c);
+            //   if (index >= 0) {
+            //     console.log(`Updating items.#${index}${subPath}: ${value}`);
+            //     this.set(`items.#${index}${subPath}`, value);
+            //   }
+            // });
+
+            return updatePromise.catch(e => {
               console.log(`Error: ${e}`);
               return c;
             });

@@ -30,6 +30,12 @@
         display: inline-block;
         vertical-align: middle;
       }
+
+      footer {
+        @apply(--paper-font-caption);
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
     </style>
 
     <header>
@@ -63,6 +69,13 @@
     <paper-material class="no-padding" elevation="1">
       <cities-list id="citieslist" items="{{ items }}" sort="{{ sortingType }}"></cities-list>
     </paper-material>
+
+    <template is="dom-if" if="{{updateDate}}">
+      <footer class="paper-material-sizer">
+        Last updated at
+        <time datetime="{{ updateDateISO }}">{{ updateDateLocal }}</time>
+      </footer>
+    </template>
   </template>
 
   <script>
@@ -103,6 +116,22 @@
             },
             notify: true,
             readOnly: true
+          },
+          updateDate: {
+            type: Date,
+            default: () => null,
+            notify: true,
+            readOnly: true
+          },
+          updateDateLocal: {
+            type: String,
+            notify: true,
+            computed: '_computeUpdateDateLocal(updateDate)'
+          },
+          updateDateISO: {
+            type: String,
+            notify: true,
+            computed: '_computeUpdateDateISO(updateDate)'
           }
         },
 
@@ -145,11 +174,38 @@
           promise.catch(() => {}).then(() => {
             this._setActiveCityWeatherPromise(null);
           });
+          promise.then(results => {
+            if ((results || []).filter(x => !!x).length) {
+              var d = new Date();
+              this._setUpdateDate(d);
+              var localforage = document.createElement('iron-meta').byKey('localforage');
+              localforage.setItem('data.items.updateDate', d);
+            }
+          });
           return promise;
         },
 
+        _computeUpdateDateLocal: function(updateDate) {
+          if (!updateDate) {
+            return '';
+          }
+          return updateDate.toLocaleFormat();
+        },
+
+        _computeUpdateDateISO: function(updateDate) {
+          if (!updateDate) {
+            return '';
+          }
+          return updateDate.toISOString();
+        },
+
         ready: function() {
-          
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.getItem('data.items.updateDate').then(d => {
+            if (d && !this.updateDate) {
+              this._setUpdateDate(d);
+            }
+          });
         }
       });
     })();

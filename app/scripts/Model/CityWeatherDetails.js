@@ -1,9 +1,7 @@
-import { WeatherService } from '../Services/WeatherServiceMock';
-
 export default class CityWeatherDetails {
 
     constructor () {
-        this.stargazersHistory = this.stargazersHistory || [];
+
     }
 
     setTemperatures () {
@@ -22,17 +20,25 @@ export default class CityWeatherDetails {
         return (c * 9 / 5) + 32;
     }
 
-    updateDetails () {
-        return WeatherService.getRepoDetails(this.owner.login, this.name).then(repo => {
-            // this.setStargazers(repo.stargazers_count);
-            // Object.keys(repo).filter(k =>
-            //     typeof repo[k] !== 'function' &&
-            //     k !== 'stargazersHistory' &&
-            //     k !== 'downloadsHistory'
-            // ).forEach(k => {
-            //     this[k] = repo[k];
-            // });
-            // return repo;
+    updateDetails (setPathFn) {
+        var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+        return searchProvider.getCityWeatherByID(this.id).then(data => {
+            console.log('asdf', data);
+            if (!data || !data.id) {
+                return;
+            }
+            Object.keys(data).forEach(key => {
+                var newProp = data[key];
+                if (this[key] !== newProp) {
+                    // this.set(`items.#${index}.${key}`, newProp);
+                    if (typeof setPathFn === 'function') {
+                        setPathFn(`.${key}`, newProp);
+                    } else {
+                        this[key] = newProp;
+                    }
+                }
+            });
+            return data;
         });
     }
 }
