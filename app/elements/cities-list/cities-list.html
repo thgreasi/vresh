@@ -60,7 +60,7 @@
         },
 
         observers: [
-            '_itemsOrSortingChanged(items, sort)'
+          '_itemsOrSortingChanged(items, sort)'
         ],
 
         refresh: function() {
@@ -68,6 +68,7 @@
           if (!this.items) {
             return Promise.resolve();
           }
+
           var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
           return Promise.all(this.items.map(c => {
             console.log(`refreshing ${c.name}`);
@@ -141,14 +142,6 @@
 
         ready: function() {
 
-          // this.items = [
-          //   'Responsive Web App boilerplate',
-          //   'Iron Elements and Paper Elements',
-          //   'End-to-end Build Tooling (including Vulcanize)',
-          //   'Unit testing with Web Component Tester',
-          //   'Routing with Page.js',
-          //   'Offline support with the Platinum Service Worker Elements'
-          // ];
         }
       });
     })();
