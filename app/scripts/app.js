@@ -71,7 +71,7 @@ loadedPromise.then(() => {
 
     if (cities && cities.length) {
       setTimeout(() => {
-        app.route = 'cities';
+        app.page.show('/cities');
         app.reloadPage();
       }, 0);
     }
