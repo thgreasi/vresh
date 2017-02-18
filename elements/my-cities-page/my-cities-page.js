@@ -116,7 +116,7 @@
       if (!updateDate) {
         return '';
       }
-      return updateDate.toLocaleFormat();
+      return updateDate.toString();
     },
 
     _computeUpdateDateISO: function _computeUpdateDateISO(updateDate) {
